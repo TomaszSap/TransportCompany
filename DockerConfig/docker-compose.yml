@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  sql-server-db:
+    container_name: sql-server-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Tomaszsap123"
+      ACCEPT_EULA: "Y"
+
+  transportcompany:
+        build: .
+        ports:
+          - "8080:8080"
+        depends_on:
+          - sql-server-db
+        environment:
+          SPRING_DATASOURCE_URL: jdbc:sqlserver://db:1433;databaseName=my_database
+          SPRING_DATASOURCE_USERNAME: SA
+          SPRING_DATASOURCE_PASSWORD: sa
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
+          SPRING_JPA_HIBERNATE_DDL_AUTO: update
