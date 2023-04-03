@@ -1,6 +1,7 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.config.PasswordEncoderConfig;
+import com.example.TransportCompany.constant.RoleType;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.model.Role;
@@ -12,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 //coś do dokończenia
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
@@ -69,8 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         return isSaved;
     }
 
-    @Override
-    public void changeRole(int employeeId, String role) {
+    private void changeRole(int employeeId, String role) {
         Optional<Employee> employeeEntity=employeeRepository.findById(employeeId);
         var roleEntity=roleRepository.getByRoleName(role);
         if(!employeeEntity.isEmpty()){
@@ -99,7 +102,24 @@ public class EmployeeServiceImpl implements EmployeeService{
     //    return modelAndView;
     }
 
-
+    public boolean updateEmployee(Employee employee)
+    {
+        boolean isUpdated=false;
+        Optional<Employee> employeeEntity=employeeRepository.findById(employee.getEmployeeId());
+        if(employeeEntity.isPresent()){
+            if(employee.getRole().getRoleName()!=employeeEntity.get().getRole().getRoleName() &&  RoleType.isValid(employee.getRole().getRoleName()))
+                changeRole(employeeEntity.get().getEmployeeId(), employee.getRole().toString());
+            else
+                return isUpdated;
+            employee.setUpdatedAt(LocalDateTime.now());
+            //ToDo
+            employee.setUpdatedBy("ADMIN");
+            employee=employeeRepository.save(employee);
+            if(employee!=null && employee.getEmployeeId()>0)
+                isUpdated=true;
+        }
+        return isUpdated;
+    }
     //here
     @Override
     public boolean addCourse(int courseId, HttpSession httpSession) {
@@ -138,4 +158,20 @@ public class EmployeeServiceImpl implements EmployeeService{
     public List<Employee> getAllEmployers() {
         return employeeRepository.findAll();
     }
+    @Override
+    public Employee getEmployeeById(int employeeId) {
+        Optional<Employee> employeeEntity=employeeRepository.findById(employeeId);
+        if(employeeEntity.isPresent())
+        return employeeEntity.get();
+        else return null;
+    }
+
+    @Override
+    public Set<Course> getCoursesById(int id) {
+        Optional<Employee> employeeEntity=employeeRepository.findById(id);
+        if(employeeEntity.isPresent())
+            return employeeEntity.get().getCourses();
+        else return null;
+
+}
 }
