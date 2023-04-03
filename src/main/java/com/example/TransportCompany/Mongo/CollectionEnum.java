@@ -1,4 +1,4 @@
-package Mongo;
+package com.example.TransportCompany.Mongo;
 
 public enum CollectionEnum {
     INVOICES("invoice");

@@ -1,7 +1,6 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.config.PasswordEncoderConfig;
-import com.example.TransportCompany.constant.AppConstants;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.model.Role;
@@ -11,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
 //coś do dokończenia
 @Service
@@ -51,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         {
             Role role=new Role();
             try{
-           role=roleRepository.getByRoleName(employee.getRole().toString());
+           role=roleRepository.getByRoleName(employee.getRole().getRoleName());
             employee.setRole(role);}
             catch (IllegalArgumentException e)
             {
@@ -73,26 +72,34 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public void changeRole(int employeeId, String role) {
         Optional<Employee> employeeEntity=employeeRepository.findById(employeeId);
+        var roleEntity=roleRepository.getByRoleName(role);
         if(!employeeEntity.isEmpty()){
-        employeeEntity.get().getRole().setRoleName(role);
+        employeeEntity.get().getRole().setRoleId(roleEntity.getRoleId());
         }
     }
 
     //here
     @Override
-    public void deleteEmployee(int employeeId) {
+    //ToDo
+    public boolean deleteEmployee(int employeeId) {
+        boolean isDeleted=false;
         Optional<Employee> employee=employeeRepository.findById(employeeId);
+        if(employee.isPresent()){
         for(Course course:employee.get().getCourses())
         {
             course.setEmployeeId(null);
             courseService.saveCourse(course);
         }
-        employeeRepository.deleteById(employeeId);
+        employee.get().setRole(null);
+      employeeRepository.deleteById(employeeId);
+      isDeleted=true;
+       }
+        return isDeleted;
         //ModelAndView modelAndView=new ModelAndView("redirect:/admin/displayClasses");
     //    return modelAndView;
     }
 
-    
+
     //here
     @Override
     public boolean addCourse(int courseId, HttpSession httpSession) {
@@ -125,5 +132,10 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public boolean unassignCar(int employeeId,int carId) {
         return false;
+    }
+
+    @Override
+    public List<Employee> getAllEmployers() {
+        return employeeRepository.findAll();
     }
 }

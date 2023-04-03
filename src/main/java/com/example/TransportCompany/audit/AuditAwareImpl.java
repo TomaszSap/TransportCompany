@@ -1,2 +1,17 @@
-package com.example.TransportCompany.audit;public class AuditAwareImpl {
+package com.example.TransportCompany.audit;
+
+
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+
+@Component("auditAwareImpl")
+public class AuditAwareImpl implements AuditorAware<String> {
+    @Override
+    public Optional<String> getCurrentAuditor() {
+        var x=Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
+        return x;
+    }
 }

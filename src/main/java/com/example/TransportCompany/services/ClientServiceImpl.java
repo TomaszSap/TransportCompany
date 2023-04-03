@@ -51,7 +51,7 @@ public class ClientServiceImpl implements ClientService{
     public void addInvoice(@RequestParam("invoice") Invoice invoice, HttpSession httpSession) {
         Client client = (Client) httpSession.getAttribute("client"); //getting client from session
         Invoice invoiceDocument = invoiceMongoDao.findInvoiceById(String.valueOf(invoice.getObjectId()),Invoice.class); //try to find person with given email
-        if (invoiceDocument == null || !(invoiceDocument.getObjectId() !=null)||invoiceDocument.getClient()!=null) //validation if is possible
+        if (invoiceDocument == null || !(invoiceDocument.getObjectId() !=null)||invoiceDocument.getClientId()!=null) //validation if is possible
         {
 
             //todo
@@ -61,8 +61,6 @@ public class ClientServiceImpl implements ClientService{
         Update update=new Update();
         update.set("clientId",client.getClientId());
         invoiceMongoDao.updateInvoiceById(String.valueOf(invoiceDocument.getObjectId()),update,Invoice.class);
-        client.getInvoices().add(invoiceDocument);
-        clientRepository.save(client);
         //
     }
 
@@ -70,10 +68,8 @@ public class ClientServiceImpl implements ClientService{
     public void deleteInvoice(@RequestParam int invoiceId, HttpSession httpSession) {
         Client client = (Client) httpSession.getAttribute("client"); //getting schoolClass from session
         Invoice invoiceDocument = invoiceMongoDao.findInvoiceById(String.valueOf(invoiceId),Invoice.class); //try to find person with given email
-        invoiceDocument.setClient(null);
+        invoiceDocument.setClientId(null);
         invoiceMongoDao.saveToMongo(invoiceDocument);
-        client.getInvoices().remove(invoiceDocument);
-        clientRepository.save(client);
         httpSession.setAttribute("client",client);
        // modelAndView.setViewName("redirect:/admin/displayStudents?classId="+ schoolClass.getClassId());
         //return modelAndView;
