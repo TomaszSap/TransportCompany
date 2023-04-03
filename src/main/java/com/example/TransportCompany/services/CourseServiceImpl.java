@@ -6,9 +6,7 @@ import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -58,7 +56,7 @@ public class CourseServiceImpl implements CourseService{
         course.get().setEmployeeId(null);
         courseRepository.save(course.get());
         employeeService.deleteCourseFromTable(employee,course.get().getCourseId());
-        return null;//"redirect:/admin/displayStudents?employeeId="+ course.get().getCourseId();
+        return null;
     }
 
     @Override
