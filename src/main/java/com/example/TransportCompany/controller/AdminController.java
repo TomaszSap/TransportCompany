@@ -26,7 +26,7 @@ public class AdminController {
     @PostMapping (value = "/createUser")
     public ResponseEntity<String> createUser(@Valid @RequestBody Employee employee, Errors errors)
     {
-        logger.info("Called POST on endpoint /admin/deleteUser/ for argument {} ",employee);
+        logger.info("Called POST on endpoint /admin/createUser/ for argument {} ",employee);
 
         if (errors.hasErrors())
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -49,6 +49,7 @@ public class AdminController {
     @GetMapping("/user")
     public ResponseEntity getUserById(@RequestParam int employeeId)
     {
+        logger.info("Called GET on endpoint /admin/user/ for argument employeeId: {} ",employeeId);
         return ResponseEntity.ok().body(employeeService.getEmployeeById(employeeId));
     }
     @DeleteMapping  (value = "/deleteUser")
@@ -61,7 +62,10 @@ public class AdminController {
     }
     @PatchMapping("/updateUser")
     public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody Employee employee)
-    {   Employee existingEmployee = employeeService.getEmployeeById(id);
+    {
+        logger.info("Called PATCH on endpoint /admin/updateUser/ for ID: {} and argument: {} ",id,employee);
+
+        Employee existingEmployee = employeeService.getEmployeeById(id);
         if (existingEmployee == null) {
             return ResponseEntity.notFound().build();
         } else {
@@ -73,6 +77,8 @@ public class AdminController {
     @GetMapping("/getUsers")
     public ResponseEntity<List> getAllUsers()
     {
+        logger.info("Called GET on endpoint /admin//getUsers/");
+
         return ResponseEntity.ok().body(employeeService.getAllEmployers());
     }
 }

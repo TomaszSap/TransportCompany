@@ -20,6 +20,8 @@ public class CourseServiceImpl implements CourseService{
 
     @Override
     public boolean saveCourse(Course course) {
+        if(course.getType()==null)
+            course.setType(CourseType.OPEN);
         boolean isSaved=false;
         Course course1=courseRepository.save(course);
         if(course1!=null && course1.getCourseId()>0)
@@ -28,8 +30,9 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public List<Course> findCoursesWithStatus(String courseType) {
-        List<Course> courseList= courseRepository.findByType(courseType);
+    public List<Course> findCoursesWithType(String courseType ) {
+        if(CourseType.isValid(courseType));
+        List<Course> courseList= courseRepository.findByType( CourseType.valueOf(courseType));
         return courseList;
     }
 

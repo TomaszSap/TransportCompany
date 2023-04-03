@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Entity
@@ -17,8 +18,12 @@ public class Course extends BaseEntity {
     @GenericGenerator(name = "native",strategy = "native")
     @Column(name = "course_id")
     private int courseId;
+    @NotBlank(message = "Loading place must be not blank")
     private String fromWhere;
+    @NotBlank(message = "Direct city must be not blank")
     private  String toWhere;
+    @Column(name = "course_type")
+    @Enumerated(EnumType.STRING)
     private CourseType type;
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "employee_id",referencedColumnName = "employee_id",nullable = true)

@@ -15,8 +15,8 @@ ACCOUNTANT("ACCOUNTANT"),
         return name;
     }
     public static boolean isValid(String role) {
-        for (RoleType kolor : RoleType.values()) {
-            if (kolor.name().equals(role) || kolor.getName().equals(role)) {
+        for (RoleType roles : RoleType.values()) {
+            if (roles.getName().equals(role)) {
                 return true;
             }
         }
