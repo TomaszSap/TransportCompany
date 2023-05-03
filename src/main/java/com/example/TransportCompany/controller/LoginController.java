@@ -19,7 +19,7 @@ public class LoginController {
     public String displayLoginPage(@RequestParam(value = "error",required = false) String error,
                                    @RequestParam(value="logout",required = false) String logout,
                                    @RequestParam(value = "register",required = false) String register
-            , Model model)
+            )
     {
         String errorMsg=null;
         if(error !=null)

@@ -2,7 +2,6 @@ package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.Mongo.InvoiceMongoDao;
 import com.example.TransportCompany.model.Client;
-import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Invoice;
 import com.example.TransportCompany.repository.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.util.Optional;
 
 

@@ -1,8 +1,6 @@
 package com.example.TransportCompany.controller;
 
-import com.example.TransportCompany.constant.CourseType;
 import com.example.TransportCompany.model.Course;
-import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.services.CourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
