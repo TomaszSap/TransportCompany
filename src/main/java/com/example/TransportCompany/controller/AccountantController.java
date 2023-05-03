@@ -49,9 +49,9 @@ public class AccountantController  extends RestEndpoint{
     @PostMapping(value = "/addClient")
     public ResponseEntity<Response> addClient(@RequestBody Client client)
     {
-        Optional<Boolean> iSaved = Optional.of(clientService.addClient(client));
+        boolean iSaved = clientService.addClient(client);
         Response response=new Response();
-        if(iSaved.isPresent()){
+        if(iSaved){
             response.setStatusCode("200");
             response.setStatusMsg("Invoice saved successfully");
             return ResponseEntity.status(HttpStatus.CREATED).header("isClientSaved","true").body(response);}
@@ -75,9 +75,9 @@ public class AccountantController  extends RestEndpoint{
     public ResponseEntity<Response> updateInvoice(@RequestParam int id,@RequestBody Invoice invoice)
     {
         logger.debug("called POST on endpoint /accountant/update");
-        Optional<Boolean> isUpdated = Optional.of(invoiceService.updateById(String.valueOf(id),invoice));
+        boolean isUpdated = invoiceService.updateById(String.valueOf(id),invoice);
         Response response=new Response();
-        if(isUpdated.isPresent())
+        if(isUpdated)
         {
             response.setStatusCode("200");
             response.setStatusMsg("Invoice saved successfully");
