@@ -2,6 +2,7 @@ package com.example.TransportCompany.Mongo;
 
 import com.example.TransportCompany.model.Invoice;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class InvoiceMongoDao extends AbstractMongoDao{
     private static final CollectionEnum collection=CollectionEnum.INVOICES;
+    private static Invoice invoice=new Invoice();
     @Override
     public MongoTemplate getMongoTemplate() {
         return null;
@@ -23,27 +25,39 @@ public class InvoiceMongoDao extends AbstractMongoDao{
         return (Invoice)  save(object,collection);
 
     }
-    public Invoice findInvoiceById(String id, Class<Invoice> entityClass){
-         return (Invoice) findById(id,entityClass,collection);
-    }
-    public void findInvoiceAndModify(Query query, Update update, Class<Invoice> entityClass) {
-         findAndModify(query,update,entityClass,collection);
-    }
-    public void updateInvoiceById(String id, Update update, Class<Invoice> entityClass) {
-         updateById(id,update,entityClass,collection);
-    }
-    public List<Invoice> findAllInvoices(Class<Invoice> entityClass){
-        return findAll(entityClass,collection);
-    }
-    public List<Invoice> findManyInvoices(Query query, Class<Invoice> entityClass) {
-        return findMany(query,entityClass,collection);
-    }
-    public void removeInvoice(Query query)
-    {
-         remove(query,collection);
-    }
+    public Invoice findInvoiceById(String invoiceId){
 
-    public void findInvoiceByClient() {
-        //return f;
+        Query query=new Query();
+        query.addCriteria(Criteria.where("objectId").is(invoiceId));
+         return (Invoice) findById(invoiceId,invoice.getClass(),collection);
+    }
+    public Invoice assignInvoice(String invoiceId,Update update){
+        Query query=new Query();
+        query.addCriteria(Criteria.where("objectId").is(invoiceId));
+
+        return (Invoice) findAndModify(query,invoice.getClass(),update,collection);
+    }
+    public void findInvoiceAndModifyById(String invoiceId,Invoice invoice) {
+        findInvoiceAndModifyById(invoiceId,invoice,collection);
+    }
+    private void findInvoiceAndModifyById(String invoiceId,Invoice invoice, CollectionEnum collection) {
+        Query query=new Query();
+        query.addCriteria(Criteria.where("objectId").is(invoiceId));
+        findAndModify(query,invoice,invoice.getClass(),collection);
+    }
+    public List<Invoice> findAllInvoices(){
+
+        return findAll(invoice.getClass(),collection);
+    }
+    public List<Invoice> findByClientInvoices(Query query) {
+        return findMany(query, invoice.getClass(),collection);
+    }
+    public boolean removeInvoice(Query query)
+    {
+       return removeInvoice(query,collection);
+    }
+    public boolean removeInvoice(Query query, CollectionEnum collection)
+    {
+       return remove(query,collection);
     }
 }

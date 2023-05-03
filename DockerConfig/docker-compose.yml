@@ -12,5 +12,13 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+  mongo:
+    image: mongo
+    container_name: transport-company-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
 volumes:
   db_data:

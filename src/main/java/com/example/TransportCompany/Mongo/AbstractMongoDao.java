@@ -3,13 +3,11 @@ package com.example.TransportCompany.Mongo;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.BulkOperations;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import java.util.List;
 
@@ -27,7 +25,6 @@ public abstract class AbstractMongoDao<T extends DaoModel> {
             logger.trace("save return {}");
             return resultObject;
     }
-
     protected T findById(String id, Class<T> entityClass, CollectionEnum collectionName){
         logger.debug("findById for collection{}, id: {}", collectionName.getName(), id);
         final Document result = getMongoTemplate().findById(id, Document.class, collectionName.getName());
@@ -45,27 +42,27 @@ public abstract class AbstractMongoDao<T extends DaoModel> {
 
     }
     //todo
-    protected T findAndModify(Query query, Update update, Class<T> entityClass, CollectionEnum collectionName) {
-        BulkOperations bulkOps = getMongoTemplate().bulkOps(BulkOperations.BulkMode.ORDERED, Document.class, collectionName.getName());
-        final FindAndModifyOptions options = new FindAndModifyOptions();
-       // final Document result=getMongoTemplate().findAndModify();
+    protected T findAndModify(Query query, T object, Class<T> entityClass, CollectionEnum collectionName) {
+        Update update = new Update();
+        ReflectionUtils.doWithFields(object.getClass(), field -> {
+            field.setAccessible(true);
+            Object value = field.get(object);
+            if (value != null) {
+                update.set(field.getName(), value);
+            }
+        });
+       final T result=getMongoTemplate().findAndModify(query,update,entityClass);
+        logger.debug("findAndModifyById for collection: {}, query: {}, update: {}", collectionName.getName(), query, update);
+        return result;
+    }
+    protected T findAndModify(Query query,Class<T> entityClass, Update update, CollectionEnum collectionName)
+    {
+
+        final T result=getMongoTemplate().findAndModify(query,update,entityClass);
         logger.debug("findAndModify for collection: {}, query: {}, update: {}", collectionName.getName(), query, update);
-        return null;//result;
-    }
-    protected T updateById(String id, Update update, Class<T> entityClass, CollectionEnum collectionName) {
-        final FindAndModifyOptions options = new FindAndModifyOptions();
-        options.returnNew(true);
-        final Query query = new Query();
-        query.addCriteria(Criteria.where("_id").is(id));
-        MongoUtil.updateAuditData(update);
-        logger.debug("updateById for collection: {}, id: {}, update: {}", collectionName, id, update);
-        final Document result = getMongoTemplate().findAndModify(query, update, options, Document.class, collectionName.getName());
-        T resultObject = MongoUtil.convertFromMongo(result, entityClass);
-        logger.trace("updateById return {}", resultObject);
-        return resultObject;
-    }
 
-
+        return  result;
+    }
     protected List<T> findAll(Class<T> entityClass, CollectionEnum collectionName){
         logger.debug("findAll for collection: {}", collectionName);
         final List<Document> document = getMongoTemplate().findAll(Document.class, collectionName.getName());
@@ -79,8 +76,13 @@ public abstract class AbstractMongoDao<T extends DaoModel> {
         logger.debug("findMany returned {} documents", result.size());
         return MongoUtil.convertFromMongo(result, entityClass);
     }
-    protected void remove(Query query, CollectionEnum collectionName) {
+    protected boolean remove(Query query, CollectionEnum collectionName) {
         logger.debug("remove for collection: {}, query: {}", collectionName, query);
-        getMongoTemplate().remove(query, Document.class, collectionName.getName());
+      var isDeleted= getMongoTemplate().remove(query, Document.class, collectionName.getName());
+      if(isDeleted.wasAcknowledged())
+      {
+          return true;
+      }
+      return false;
     }
 }

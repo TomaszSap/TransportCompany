@@ -4,11 +4,13 @@ import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 public class RestEndpoint {
 
     @Autowired
 EmployeeService employeeService;
+    @PatchMapping("/user")
     public ResponseEntity<String> updateUser( int id, Employee employee)
     {   Employee existingEmployee = employeeService.getEmployeeById(id);
         if (existingEmployee == null) {

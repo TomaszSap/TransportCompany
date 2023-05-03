@@ -1,6 +1,7 @@
 package com.example.TransportCompany.model;
 
 import com.example.TransportCompany.Mongo.DaoModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,6 +17,7 @@ public class Invoice extends DaoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
     @GenericGenerator(name = "native",strategy = "native")
+    @JsonIgnore
     private String objectId;
     private Date dateOfService;
     private Date dateOfIssue;

@@ -14,7 +14,7 @@ public enum CourseType {
         }
         public static boolean isValid(String type) {
                 for (CourseType types : CourseType.values()) {
-                        if (types.name().equals(type) || types.getName().equals(type)) {
+                        if (types.getName().equals(type)) {
                                 return true;
                         }
                 }

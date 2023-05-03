@@ -29,7 +29,7 @@ public class LoginController {
         else if(register!=null)
             errorMsg="You registered successful";
        // model.addAttribute("errorMsg",errorMsg);
-        return "login.html";
+        return "redirect:/login";
     }
     @GetMapping(value = "/logout")
     public String logoutPage(HttpServletRequest request, HttpServletResponse response)

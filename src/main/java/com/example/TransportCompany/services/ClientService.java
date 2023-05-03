@@ -15,4 +15,8 @@ public interface ClientService {
     public abstract Invoice deleteInvoice(int clientId);
 
     void deleteInvoice(@RequestParam int invoiceId, HttpSession httpSession);
+
+    Object updateClient(String clientId, Client client);
+
+    Client getClient(String clientId);
 }

@@ -10,10 +10,12 @@ import java.util.List;
 public interface InvoiceService {
     abstract Invoice addInvoice(Invoice invoice);
     abstract Invoice findAndModifyInvoice(Invoice invoice);
-    abstract Invoice deleteInvoice(Invoice invoice);
-    abstract  Invoice findById(int invoiceId);
-    abstract boolean updateById(int invoiceId);
+    abstract boolean deleteInvoice(int id);
+    abstract  Invoice findById(String invoiceId);
+    abstract boolean updateById(String invoiceId,Invoice invoice);
     abstract List<Invoice> getAll(Invoice invoice);
+
+    abstract Invoice print(String invoice);
 
     abstract List<Invoice> findByClient(Invoice invoice);
 

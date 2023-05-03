@@ -22,13 +22,7 @@ public class ForwarderController extends RestEndpoint {
 
     @Autowired
     CourseService courseService;
-    @PatchMapping("/user")
-    public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody Employee employee)
-    {  return super.updateUser(id,employee);
-    }
-  /*  public ResponseEntity<Boolean> addCourseToDriver()
-    {
-    }*/
+
 
 
     @PostMapping("/addCourse")

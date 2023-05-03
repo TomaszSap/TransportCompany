@@ -16,7 +16,7 @@ import java.util.Set;
 @RestController
 //@RequestMapping("driver")
 public class DriverController extends RestEndpoint {
-  /*  private static final Logger logger= LoggerFactory.getLogger(DriverController.class);
+  private static final Logger logger= LoggerFactory.getLogger(DriverController.class);
 
     @Autowired
     EmployeeService employeeService;
@@ -28,8 +28,15 @@ public class DriverController extends RestEndpoint {
     @GetMapping("/getCourses")
     public ResponseEntity<Set> getAllCourses(@RequestParam int id)
     {
-        logger.info("Called GET on endpoint /admin//getUsers/");
+        logger.debug("Called GET on endpoint /admin//getCourses/");
 
         return  ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
-    }*/
+    }
+  @GetMapping("/getCourse")
+  public ResponseEntity<Set> getCourse(@RequestParam int id,@RequestParam int courseId)
+  {
+    logger.debug("Called GET on endpoint /admin//getCourse/");
+
+    return  ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
+  }
 }
