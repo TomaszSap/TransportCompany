@@ -10,8 +10,8 @@ import java.util.Set;
 public interface EmployeeService {
 
 
-    abstract void deleteCourseFromTable(Employee employee,int id);
-    abstract boolean addEmployee(Employee employee);
+     void deleteCourseFromTable(Employee employee,int id);
+     boolean addEmployee(Employee employee);
 
      boolean deleteEmployee(int employeeId);
      boolean addCourse(int courseId, HttpSession httpSession);

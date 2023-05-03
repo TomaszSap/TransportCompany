@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface CarService
 {
-    abstract public boolean addCar(Car car);
-    abstract public List<Car> showUnassignedCars();
-    abstract  public List<Car> showAllCars();
-    abstract public boolean deleteCar(int id);
+     public boolean addCar(Car car);
+     public List<Car> showUnassignedCars();
+      public List<Car> showAllCars();
+     public boolean deleteCar(int id);
 }

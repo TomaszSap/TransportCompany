@@ -9,10 +9,10 @@ import javax.servlet.http.HttpSession;
 
 @Service
 public interface ClientService {
-     abstract boolean addClient(Client client);
-     abstract boolean deleteClient(int clientId);
-     abstract Invoice addInvoice(int clientId);
-     abstract Invoice deleteInvoice(int clientId);
+      boolean addClient(Client client);
+      boolean deleteClient(int clientId);
+      Invoice addInvoice(int clientId);
+      Invoice deleteInvoice(int clientId);
 
     void deleteInvoice(@RequestParam int invoiceId, HttpSession httpSession);
 

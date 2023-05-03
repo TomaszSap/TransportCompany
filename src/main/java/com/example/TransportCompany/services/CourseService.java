@@ -6,9 +6,9 @@ import com.example.TransportCompany.model.Course;
 import java.util.List;
 
 public interface CourseService {
-    abstract boolean saveCourse(Course course);
-    abstract List<Course> findCoursesWithType(String courseType);
-    abstract boolean updateCourseStatus(int id, CourseType courseType);
-    abstract String deleteCourse(int id);
-    abstract Course findCourse(int id);
+     boolean saveCourse(Course course);
+     List<Course> findCoursesWithType(String courseType);
+     boolean updateCourseStatus(int id, CourseType courseType);
+     String deleteCourse(int id);
+     Course findCourse(int id);
 }
