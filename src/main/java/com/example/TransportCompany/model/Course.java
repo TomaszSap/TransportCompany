@@ -22,6 +22,8 @@ public class Course extends BaseEntity {
     private String fromWhere;
     @NotBlank(message = "Direct city must be not blank")
     private  String toWhere;
+    @NotBlank(message = "Distance must be not blank")
+    private  double distance;
     @Column(name = "course_type")
     @Enumerated(EnumType.STRING)
     private CourseType type;

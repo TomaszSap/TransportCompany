@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class PrintInvoice extends Invoice{
     private Client client;
+    private Course course;
+
 }

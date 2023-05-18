@@ -32,9 +32,9 @@ public class AccountantController  extends RestEndpoint{
     }
 */
     @PostMapping(value = "/createInvoice")
-    public ResponseEntity<Response> createInvoice(@Valid @RequestBody Invoice invoice)
+    public ResponseEntity<Response> createInvoice(@Valid @RequestBody Invoice invoice,@RequestParam int courseId)
     {
-       Optional<Invoice> iSaved = Optional.ofNullable(invoiceService.addInvoice(invoice));
+       Optional<Invoice> iSaved = Optional.ofNullable(invoiceService.addInvoice(invoice,courseId));
        Response response=new Response();
         if(iSaved.isPresent()){
             response.setStatusCode("200");

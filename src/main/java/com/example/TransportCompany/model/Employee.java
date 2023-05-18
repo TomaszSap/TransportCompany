@@ -25,7 +25,6 @@ public class Employee extends BaseEntity {
     String name;
     @NotBlank(message = "Surname must be not blank")
     @Size(min=2 , max=100, message = "Surname should be min 2 symbols and less than 100")
-
     String surname;
     @NotBlank(message = "Email must not be blank")
     @Pattern(regexp = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+" +

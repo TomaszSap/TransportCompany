@@ -2,6 +2,7 @@ package com.example.TransportCompany.controller;
 
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.services.CourseService;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,8 @@ public class ForwarderController extends RestEndpoint {
             courseService.saveCourse(course);
             isCreated=true;
         }
-        catch (IllegalArgumentException e)
-        {
-            logger.error(String.valueOf(e));
+         catch (JSONException e) {
+            throw new IllegalArgumentException(e);
         }
         return ResponseEntity.ok(isCreated).status(HttpStatus.CREATED)
                 .header(HttpHeaders.LOCATION, "redirect:/getOpenCourses")

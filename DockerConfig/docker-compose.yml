@@ -16,6 +16,7 @@ services:
     image: mongo
     container_name: transport-company-mongo
     environment:
+      MONGO_INITDB_DATABASE: invoices-transport-company
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:

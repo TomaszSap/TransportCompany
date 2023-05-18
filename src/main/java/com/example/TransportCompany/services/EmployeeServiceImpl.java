@@ -2,11 +2,13 @@ package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.config.PasswordEncoderConfig;
 import com.example.TransportCompany.constant.RoleType;
+import com.example.TransportCompany.model.Car;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.model.Role;
 import com.example.TransportCompany.repository.EmployeeRepository;
 import com.example.TransportCompany.repository.RoleRepository;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class EmployeeServiceImpl implements EmployeeService{
     private PasswordEncoderConfig passwordEncoder;
     @Autowired
     EmployeeRepository employeeRepository;
+    @Autowired
+    CarService carService;
     @Autowired
     RoleRepository roleRepository;
     @Autowired
@@ -81,9 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
     }
 
-    //here
     @Override
-    //ToDo
     public boolean deleteEmployee(int employeeId) {
         boolean isDeleted=false;
         Optional<Employee> employee=employeeRepository.findById(employeeId);
@@ -91,7 +93,11 @@ public class EmployeeServiceImpl implements EmployeeService{
         for(Course course:employee.get().getCourses())
         {
             course.setEmployeeId(null);
-            courseService.saveCourse(course);
+            try {
+                courseService.saveCourse(course);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
         employee.get().setRole(null);
       employeeRepository.deleteById(employeeId);
@@ -133,7 +139,11 @@ public class EmployeeServiceImpl implements EmployeeService{
             //
             return false;}
         courseEntity.setEmployeeId(employee);
-        courseService.saveCourse(courseEntity);
+        try {
+            courseService.saveCourse(courseEntity);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         employee.getCourses().add(courseEntity);
         employeeRepository.save(employee);
         return true;
@@ -141,16 +151,54 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public boolean deleteCourse(int employeeId,int courseId) {
+        Optional <Employee> employeeEntity=employeeRepository.findById(employeeId);
+        Optional<Course> courseEntity= Optional.ofNullable(courseService.findCourse(courseId));
+        if(employeeEntity.isPresent()&&courseEntity.isPresent() && employeeEntity.get().getCourses().contains(courseEntity.get()))
+        {
+            employeeEntity.get().getCourses().remove(courseEntity.get());
+            employeeRepository.save(employeeEntity.get());
+            courseEntity.get().setEmployeeId(null);
+            courseService.updateCourse(courseEntity.get());
+            return true;
+        }
         return false;
     }
 
     @Override
-    public boolean assignCar(int employeeId,int carId) {
-        return false;
+    public void assignCar(int employeeId,int carId) throws Exception {
+        Optional <Employee> employeeEntity=employeeRepository.findById(employeeId);
+        Optional<Car> carEntity= carService.findCarById(carId);
+        if (employeeEntity.isPresent()
+                && carEntity.isPresent()
+                && carEntity.get().getEmployee()==null
+                &&employeeEntity.get().getCar()==null){
+
+            try {
+                employeeEntity.get().setCar(carEntity.get());
+                carEntity.get().setEmployee(employeeEntity.get());
+                employeeRepository.save(employeeEntity.get());
+                carService.updateCar(carEntity.get().getCarId(),carEntity.get());
+            }
+        catch (Exception e) {
+            throw new Exception("Error updating entity: ", e);
+        }
+        }
+       // else throw IllegalArgumentException
     }
 
     @Override
     public boolean unassignCar(int employeeId,int carId) {
+        Optional <Employee> employeeEntity=employeeRepository.findById(employeeId);
+        Optional<Car> carEntity= carService.findCarById(carId);
+        if(employeeEntity.isPresent()&&carEntity.isPresent()  && carEntity.isPresent()
+                && employeeEntity.get().getCar().getId()==carEntity.get().getId())
+        {
+            employeeEntity.get().setCar(null);
+            carEntity.get().setEmployee(null);
+            employeeRepository.save(employeeEntity.get());
+            carService.updateCar(carEntity.get().getCarId(),carEntity.get());
+            return true;
+        }
         return false;
     }
 

@@ -16,7 +16,7 @@ public interface EmployeeService {
      boolean deleteEmployee(int employeeId);
      boolean addCourse(int courseId, HttpSession httpSession);
      boolean deleteCourse(int employeeId,int courseId);
-     boolean assignCar(int employeeId,int carId);
+     void assignCar(int employeeId,int carId) throws Exception;
      boolean unassignCar(int employeeId,int carId);
      List<Employee> getAllEmployers();
       boolean updateEmployee(Employee employee);

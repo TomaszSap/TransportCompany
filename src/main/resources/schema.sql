@@ -31,6 +31,7 @@ CREATE TABLE if not exists courses (
   toWhere VARCHAR(255),
   type VARCHAR(255),
   course_type VARCHAR(255),
+  distance double,
   created_at TIMESTAMP NOT NULL,
   created_by varchar(50) NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,

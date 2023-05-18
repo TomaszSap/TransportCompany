@@ -6,7 +6,11 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -19,14 +23,12 @@ public class Invoice extends DaoModel {
     @GenericGenerator(name = "native",strategy = "native")
     @JsonIgnore
     private String objectId;
-    private Date dateOfService;
+    private LocalDateTime dateOfService;
     private Date dateOfIssue;
     private Date dateOfPayment;
-
-    private String value;
-    private String vat;
+    private BigDecimal value;
+    private String service="Transport";
     private String clientId;
-
-    //todo ew string clientId
-
+    private BigDecimal totalAmount;
+    private int courseId;
 }

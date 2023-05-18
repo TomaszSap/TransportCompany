@@ -41,7 +41,6 @@ public abstract class AbstractMongoDao<T extends DaoModel> {
         return null;
 
     }
-    //todo
     protected T findAndModify(Query query, T object, Class<T> entityClass, CollectionEnum collectionName) {
         Update update = new Update();
         ReflectionUtils.doWithFields(object.getClass(), field -> {
@@ -55,14 +54,7 @@ public abstract class AbstractMongoDao<T extends DaoModel> {
         logger.debug("findAndModifyById for collection: {}, query: {}, update: {}", collectionName.getName(), query, update);
         return result;
     }
-    protected T findAndModify(Query query,Class<T> entityClass, Update update, CollectionEnum collectionName)
-    {
 
-        final T result=getMongoTemplate().findAndModify(query,update,entityClass);
-        logger.debug("findAndModify for collection: {}, query: {}, update: {}", collectionName.getName(), query, update);
-
-        return  result;
-    }
     protected List<T> findAll(Class<T> entityClass, CollectionEnum collectionName){
         logger.debug("findAll for collection: {}", collectionName);
         final List<Document> document = getMongoTemplate().findAll(Document.class, collectionName.getName());

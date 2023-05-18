@@ -4,10 +4,10 @@ import com.example.TransportCompany.model.Invoice;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+@Component
 public class InvoiceMongoDao extends AbstractMongoDao{
     private static final CollectionEnum collection=CollectionEnum.INVOICES;
     private static Invoice invoice=new Invoice();
@@ -26,17 +26,11 @@ public class InvoiceMongoDao extends AbstractMongoDao{
 
     }
     public Invoice findInvoiceById(String invoiceId){
-
         Query query=new Query();
         query.addCriteria(Criteria.where("objectId").is(invoiceId));
          return (Invoice) findById(invoiceId,invoice.getClass(),collection);
     }
-    public Invoice assignInvoice(String invoiceId,Update update){
-        Query query=new Query();
-        query.addCriteria(Criteria.where("objectId").is(invoiceId));
 
-        return (Invoice) findAndModify(query,invoice.getClass(),update,collection);
-    }
     public void findInvoiceAndModifyById(String invoiceId,Invoice invoice) {
         findInvoiceAndModifyById(invoiceId,invoice,collection);
     }

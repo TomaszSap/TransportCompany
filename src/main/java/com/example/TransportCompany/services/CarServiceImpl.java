@@ -61,4 +61,20 @@ public class CarServiceImpl implements CarService
         }
         return isDeleted;
     }
+
+    @Override
+    public Optional<Car> findCarById(int carId) {
+       return carRepository.findById(carId);
+    }
+
+    @Override
+    public void updateCar(int carId,Car update) {
+        var carEntity=carRepository.findById(carId);
+        if(carEntity.isPresent())
+        {
+            update.setId(carEntity.get().getId());
+            carRepository.save(update);
+        }
+    }
+
 }

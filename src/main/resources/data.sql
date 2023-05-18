@@ -6,3 +6,5 @@ VALUES ('DRIVER',CURDATE(),'DBA');
 
 INSERT INTO `roles` (`role_name`,`created_at`, `created_by`)
 VALUES ('ACCOUNTANT',CURDATE(),'DBA');
+INSERT INTO `roles` (`role_name`,`created_at`, `created_by`)
+VALUES ('FORWARDER',CURDATE(),'DBA');
