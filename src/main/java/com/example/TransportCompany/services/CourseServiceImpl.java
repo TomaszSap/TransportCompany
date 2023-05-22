@@ -4,6 +4,7 @@ import com.example.TransportCompany.constant.CourseType;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.repository.CourseRepository;
+import lombok.SneakyThrows;
 import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,13 @@ public class CourseServiceImpl implements CourseService{
     CourseRepository courseRepository;
     @Autowired
     OpenRouteService openRouteService;
+    @SneakyThrows
     @Override
     public boolean saveCourse(Course course) throws JSONException {
         if(course.getType()==null)
             course.setType(CourseType.OPEN);
         boolean isSaved=false;
-        try {
-            course.setDistance(openRouteService.calculateDistance(course.getFromWhere(), course.getToWhere()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        course.setDistance(openRouteService.calculateDistance(course.getFromWhere(),course.getToWhere()));
         Course course1=courseRepository.save(course);
         if(course1!=null && course1.getCourseId()>0)
             isSaved=true;
@@ -51,13 +49,17 @@ public class CourseServiceImpl implements CourseService{
     public boolean updateCourse(int id , Course update) {
         boolean isUpdated=false;
         Optional<Course> course=courseRepository.findById(id);
-        Course updatedCourse=new Course();
+        Course updatedCourse;
         if (!course.isEmpty() && course.get().getCourseId()>0)
         {
-            updatedCourse= course.get();
-
-            BeanUtils.copyProperties(update, course.get(), getNullPropertyNames(update));
-
+            try {
+                update.setDistance(openRouteService.calculateDistance(update.getFromWhere(),update.getToWhere()));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            BeanUtils.copyProperties(course.get(), update, getNullPropertyNames(update));
             updatedCourse=  courseRepository.save(update);
         }
         else {
@@ -84,8 +86,8 @@ public class CourseServiceImpl implements CourseService{
     @Override
     public void deleteCourse(int id) {
         Optional<Course> course=courseRepository.findById(id);
-        Employee employee= course.get().getEmployeeId();
-        course.get().setEmployeeId(null);
+        Employee employee= course.get().getEmployee();
+        course.get().setEmployee(null);
         courseRepository.save(course.get());
      employeeService.deleteCourseFromTable(employee,course.get().getCourseId());
     }

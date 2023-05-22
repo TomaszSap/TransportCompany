@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         if(employee.isPresent()){
         for(Course course:employee.get().getCourses())
         {
-            course.setEmployeeId(null);
+            course.setEmployee(null);
             try {
                 courseService.saveCourse(course);
             } catch (JSONException e) {
@@ -107,6 +106,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         //ModelAndView modelAndView=new ModelAndView("redirect:/admin/displayClasses");
     //    return modelAndView;
     }
+
 
     public boolean updateEmployee(Employee employee)
     {
@@ -126,27 +126,30 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         return isUpdated;
     }
-    //here
     @Override
-    public boolean addCourse(int courseId, HttpSession httpSession) {
-        Employee employee = (Employee) httpSession.getAttribute("employee");
+    public boolean addCourse(int driverId, int courseId) {
+        Optional<Employee> employeeEntity=employeeRepository.findById(driverId);
         Course courseEntity = courseService.findCourse(courseId);
-
-        if (courseEntity == null || !(courseEntity.getCourseId() > 0)||courseEntity.getEmployeeId()!=null) //validation if is possible
+        if (courseEntity == null && !(courseEntity.getCourseId() > 0)&& employeeEntity.isPresent()) //validation if is possible
         {
-           // modelAndView.setViewName("redirect:/admin/displayStudents?classId="+ schoolClass.getClassId()+"&error=true");
-            //return modelAndView;
-            //
-            return false;}
-        courseEntity.setEmployeeId(employee);
-        try {
-            courseService.saveCourse(courseEntity);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        employee.getCourses().add(courseEntity);
-        employeeRepository.save(employee);
-        return true;
+            if (courseEntity.getEmployee()!=null)
+            {
+                var x=employeeRepository.findById(courseEntity.getEmployee().getEmployeeId());
+                x.get().getCourses().remove(courseEntity.getCourseId());
+                employeeRepository.save(x.get());
+                courseEntity.setEmployee(null);
+            }
+            courseEntity.setEmployee(employeeEntity.get());
+            try {
+                courseService.saveCourse(courseEntity);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            employeeEntity.get().getCourses().add(courseEntity);
+            employeeRepository.save(employeeEntity.get());
+            return true;
+           }
+        return false;
     }
 
     @Override
@@ -157,7 +160,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         {
             employeeEntity.get().getCourses().remove(courseEntity.get());
             employeeRepository.save(employeeEntity.get());
-            courseEntity.get().setEmployeeId(null);
+            courseEntity.get().setEmployee(null);
             courseService.updateCourse(courseEntity.get());
             return true;
         }

@@ -3,6 +3,7 @@ package com.example.TransportCompany.services;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,7 +14,8 @@ import java.util.Scanner;
 
 @Service
 public class OpenRouteService {
-    private static final String API_KEY = "";
+    @Value("${open_route_key}")
+    private String API_KEY;
     private Optional<JSONArray> getCoordinates(String city) throws JSONException {
         JSONArray coordinates = null;
         try {

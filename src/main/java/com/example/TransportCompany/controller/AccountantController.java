@@ -17,20 +17,12 @@ import java.util.Optional;
 
 @RestController
 //@RequestMapping("accountant")
-public class AccountantController  extends RestEndpoint{
+public class AccountantController {
     private static final Logger logger= LoggerFactory.getLogger(AccountantController.class);
     @Autowired
     private InvoiceService invoiceService;
     @Autowired
     private ClientService clientService;
-
-/*    @Autowired
-    EmployeeService employeeService;
-    @PatchMapping("/user")
-    public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody Employee employee)
-    {  return super.updateUser(id,employee);
-    }
-*/
     @PostMapping(value = "/createInvoice")
     public ResponseEntity<Response> createInvoice(@Valid @RequestBody Invoice invoice,@RequestParam int courseId)
     {
@@ -53,7 +45,7 @@ public class AccountantController  extends RestEndpoint{
         Response response=new Response();
         if(iSaved){
             response.setStatusCode("200");
-            response.setStatusMsg("Invoice saved successfully");
+            response.setStatusMsg("Client saved successfully");
             return ResponseEntity.status(HttpStatus.CREATED).header("isClientSaved","true").body(response);}
         else {
             response.setStatusCode("400");
@@ -66,10 +58,7 @@ public class AccountantController  extends RestEndpoint{
     {
         Optional<Object> iSaved = Optional.ofNullable(clientService.updateClient(clientId,client));
 
-        if(iSaved.isPresent())
-            return ResponseEntity.ok(iSaved.get());
-        else
-            return ResponseEntity.badRequest().body(iSaved.get());
+        return iSaved.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body("Failed to update Client!"));
     }
     @PostMapping(value = "/updateInvoice")
     public ResponseEntity<Response> updateInvoice(@RequestParam int id,@RequestBody Invoice invoice)
@@ -80,7 +69,7 @@ public class AccountantController  extends RestEndpoint{
         if(isUpdated)
         {
             response.setStatusCode("200");
-            response.setStatusMsg("Invoice saved successfully");
+            response.setStatusMsg("Invoice updated successfully");
             return ResponseEntity.status(HttpStatus.CREATED).header("isInvUpdated","true").body(response);
         }
         else

@@ -15,27 +15,28 @@ import java.util.Set;
 
 @RestController
 //@RequestMapping("driver")
-public class DriverController extends RestEndpoint {
+public class DriverController  {
   private static final Logger logger= LoggerFactory.getLogger(DriverController.class);
 
     @Autowired
     EmployeeService employeeService;
     @PatchMapping("/user")
     public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody Employee employee)
-    { return super.updateUser(id,employee);
+    { //return super.updateUser(id,employee);
+      return null;
     }
 
-    @GetMapping("/getCourses")
+    @GetMapping("/getAllCourses")
     public ResponseEntity<Set> getAllCourses(@RequestParam int id)
     {
-        logger.debug("Called GET on endpoint /admin//getCourses/");
+        logger.debug("Called GET on endpoint /getCourses/");
 
         return  ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
     }
   @GetMapping("/getCourse")
   public ResponseEntity<Set> getCourse(@RequestParam int id,@RequestParam int courseId)
   {
-    logger.debug("Called GET on endpoint /admin//getCourse/");
+    logger.debug("Called GET on endpoint /getCourse/");
 
     return  ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
   }

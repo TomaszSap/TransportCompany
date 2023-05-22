@@ -65,7 +65,7 @@ public class Employee extends BaseEntity {
     @Size(min = 8,message = " Confirm password must be at least 8 characters long")
     @Transient
     private String confirmPwd;
-    @OneToMany(mappedBy ="employeeId",fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "employee",fetch = FetchType.LAZY,
             cascade = CascadeType.PERSIST, targetEntity = Course.class)
     // @JoinColumn(name = "employee_id",referencedColumnName = "personId",nullable = true)
     private Set<Course> courses;

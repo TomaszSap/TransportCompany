@@ -5,11 +5,13 @@ import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.repository.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 
 @Slf4j
+@Service
 public class ClientServiceImpl implements ClientService{
    @Autowired
     ClientRepository clientRepository;
