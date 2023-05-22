@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 //@RequestMapping("admin")
@@ -55,7 +56,7 @@ public class AdminController {
     @DeleteMapping  (value = "/deleteUser")
     public ResponseEntity<Boolean> deleteUser(@RequestParam int employeeId)
     {
-        logger.info("Called DELETE on endpoint /admin/deleteUser/ for argument {} ",String.valueOf(employeeId));
+        logger.info("Called DELETE on endpoint /admin/deleteUser/ for argument {} ", employeeId);
         boolean isDeleted=employeeService.deleteEmployee(employeeId);
 
         return ResponseEntity.ok().header(HttpHeaders.LOCATION,"redirect:/getUsers").body(isDeleted);
@@ -65,8 +66,8 @@ public class AdminController {
     {
         logger.info("Called PATCH on endpoint /admin/updateUser/ for ID: {} and argument: {} ",id,employee);
 
-        Employee existingEmployee = employeeService.getEmployeeById(id);
-        if (existingEmployee == null) {
+        Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
+        if (existingEmployee.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             employee.setEmployeeId(id);

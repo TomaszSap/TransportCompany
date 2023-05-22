@@ -1,21 +1,22 @@
 package com.example.TransportCompany.model;
 
 import com.example.TransportCompany.constant.CourseType;
-import com.example.TransportCompany.services.OpenRouteService;
 import com.example.TransportCompany.sql.BaseEntity;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.io.IOException;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "courses")
 //ToDo
 public class Course extends BaseEntity {
@@ -25,8 +26,10 @@ public class Course extends BaseEntity {
     @Column(name = "course_id")
     private int courseId;
     @NotBlank(message = "Loading place must be not blank")
+    @JsonProperty("fromWhere")
     private String fromWhere;
     @NotBlank(message = "Direct city must be not blank")
+    @JsonProperty("toWhere")
     private  String toWhere;
     private  double distance;
     @Column(name = "course_type")

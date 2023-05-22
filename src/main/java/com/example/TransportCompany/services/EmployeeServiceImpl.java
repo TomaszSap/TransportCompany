@@ -63,7 +63,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             {
                 logger.error("illegal role exception"+ role);
             }
-            employee.setPwd(passwordEncoder.encode(employee.getPwd()));
+            employee.setPwd(PasswordEncoderConfig.encode(employee.getPwd()));
             employee=employeeRepository.save(employee);
         }
         else
@@ -210,19 +210,19 @@ public class EmployeeServiceImpl implements EmployeeService{
         return employeeRepository.findAll();
     }
     @Override
-    public Employee getEmployeeById(int employeeId) {
-        Optional<Employee> employeeEntity=employeeRepository.findById(employeeId);
-        if(employeeEntity.isPresent())
-        return employeeEntity.get();
-        else return null;
+    public Optional<Employee> getEmployeeById(int employeeId) {
+        return employeeRepository.findById(employeeId);
+    }
+
+    @Override
+    public List<Employee> getEmployeersByRole(RoleType roleType) {
+        return employeeRepository.findByRole(roleType.getName());
     }
 
     @Override
     public Set<Course> getCoursesById(int id) {
         Optional<Employee> employeeEntity=employeeRepository.findById(id);
-        if(employeeEntity.isPresent())
-            return employeeEntity.get().getCourses();
-        else return null;
+        return employeeEntity.map(Employee::getCourses).orElse(null);
 
 }
 }

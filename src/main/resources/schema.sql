@@ -32,18 +32,22 @@ CREATE TABLE if not exists courses (
   type VARCHAR(255),
   course_type VARCHAR(255),
   distance double,
+  client_id INT,
   created_at TIMESTAMP NOT NULL,
   created_by varchar(50) NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,
   updated_by varchar(50) DEFAULT NULL,
-  PRIMARY KEY (course_id)
+  PRIMARY KEY (course_id),
+  FOREIGN KEY (client_id) REFERENCES clients(client_id)
+
 );
 CREATE TABLE if not exists clients (
   client_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   surname VARCHAR(100) NOT NULL,
-  email VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
   company VARCHAR(100) NOT NULL,
+  NIP VARCHAR(100) NOT NULL UNIQUE,
   invoice_id int NULL,
   created_at TIMESTAMP NOT NULL,
   created_by varchar(50) NOT NULL,

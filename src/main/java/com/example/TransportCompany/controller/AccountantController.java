@@ -10,13 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("accountant")
+@RequestMapping("/accountant")
 public class AccountantController {
     private static final Logger logger= LoggerFactory.getLogger(AccountantController.class);
     @Autowired
@@ -39,8 +41,12 @@ public class AccountantController {
         }
     }
     @PostMapping(value = "/addClient")
-    public ResponseEntity<Response> addClient(@RequestBody Client client)
+    public ResponseEntity<Response> addClient(@Valid @RequestBody Client client, Errors errors)
     {
+        if (errors.hasErrors()) {
+            logger.error("Client from validation failed due to: "+ errors);
+            throw new ValidationException(String.valueOf(errors));
+        }
         boolean iSaved = clientService.addClient(client);
         Response response=new Response();
         if(iSaved){
@@ -53,8 +59,25 @@ public class AccountantController {
             return ResponseEntity.badRequest().header("isClientSaved","false").body(response);
         }
     }
+    @GetMapping(value = "/getAllClients")
+    public ResponseEntity<Object> getAllClients()
+    {
+        return ResponseEntity.ok().body(clientService.getAllClients());
+
+    }
+    @DeleteMapping("/deleteClient")
+    public ResponseEntity<String> deleteClient(@RequestParam int clientId)
+    {
+        boolean isDeleted=clientService.deleteClient(clientId);
+        if (isDeleted) {
+            return ResponseEntity.ok("Client has been deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The client with the specified ID does not exist.");
+        }
+    }
     @PostMapping(value = "/updateClient")
-    public ResponseEntity<Object> updateClient(@RequestParam String clientId, @RequestBody Client client)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> updateClient(@RequestParam int clientId,@Valid @RequestBody Client client)
     {
         Optional<Object> iSaved = Optional.ofNullable(clientService.updateClient(clientId,client));
 

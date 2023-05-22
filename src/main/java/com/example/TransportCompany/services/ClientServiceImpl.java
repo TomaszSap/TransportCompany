@@ -4,10 +4,14 @@ import com.example.TransportCompany.Mongo.InvoiceMongoDao;
 import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.repository.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+
+import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
 
 @Slf4j
@@ -20,9 +24,12 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public boolean addClient(Client client) {
         boolean isSaved=false;
+        Optional<Client> isAccount=Optional.ofNullable(clientRepository.findByEmail(client.getEmail()));
+        if (isAccount.isEmpty()) {
+
         Client result=clientRepository.save(client);
         if(result!=null && result.getClientId()>0)
-            isSaved=true;
+            isSaved=true;}
         return isSaved;
 
     }
@@ -39,18 +46,27 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public Object updateClient(String clientId, Client client) {
+    public Object updateClient(int clientId, Client client) {
         boolean isUpdated=false;
         Optional<Client> clientEntity=clientRepository.findById(Integer.valueOf(clientId));
-        Client updatedCourse=new Client();
-
+        Client updatedClient=new Client();
+        client.setUpdatedBy("ADMIN");
         if (!clientEntity.isEmpty())
         {
-            updatedCourse=clientRepository.save(clientEntity.get());
+            client.setClientId(clientEntity.get().getClientId());
+            if(client.getEmail()!=null&& client.getEmail()==clientEntity.get().getEmail() || client.getEmail()==null)
+            clientEntity.get().setConfirmEmail(clientEntity.get().getEmail());
+            BeanUtils.copyProperties(client, clientEntity.get(), getNullPropertyNames(client));
+            updatedClient=clientRepository.save(clientEntity.get());
         }
-        if(updatedCourse!=null && updatedCourse.getUpdatedBy()!=null)
+        if(updatedClient!=null && updatedClient.getUpdatedBy()!=null)
             isUpdated=true;
         return isUpdated;
+    }
+
+    @Override
+    public List<Client> getAllClients() {
+        return clientRepository.findAll();
     }
 
     @Override

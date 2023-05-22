@@ -1,10 +1,11 @@
 package com.example.TransportCompany.services;
 
+import com.example.TransportCompany.constant.RoleType;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface EmployeeService {
@@ -20,7 +21,9 @@ public interface EmployeeService {
      boolean unassignCar(int employeeId,int carId);
      List<Employee> getAllEmployers();
       boolean updateEmployee(Employee employee);
-     Employee getEmployeeById(int employeeId);
+     Optional<Employee> getEmployeeById(int employeeId);
+     List<Employee> getEmployeersByRole(RoleType roleType);
+
      Set<Course> getCoursesById(int id);
 
 }

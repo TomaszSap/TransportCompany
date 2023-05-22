@@ -1,30 +1,25 @@
 package com.example.TransportCompany.controller;
 
-import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.services.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
-//@RequestMapping("driver")
+@RequestMapping("driver")
 public class DriverController  {
   private static final Logger logger= LoggerFactory.getLogger(DriverController.class);
 
     @Autowired
     EmployeeService employeeService;
-    @PatchMapping("/user")
-    public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody Employee employee)
-    { //return super.updateUser(id,employee);
-      return null;
-    }
 
     @GetMapping("/getAllCourses")
     public ResponseEntity<Set> getAllCourses(@RequestParam int id)

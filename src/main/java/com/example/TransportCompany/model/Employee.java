@@ -2,7 +2,7 @@ package com.example.TransportCompany.model;
 
 import com.example.TransportCompany.sql.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -11,7 +11,10 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "employers")
 public class Employee extends BaseEntity {
@@ -44,7 +47,6 @@ public class Employee extends BaseEntity {
     private String confirmEmail;
     @NotBlank(message = "Mobile number must not be blank")
     @Pattern(regexp = "(^$|[0-9]{9})",message = "Mobile number must be 9 digits")
-
     private String mobileNumber;
     @NotBlank(message = "PESEL must not be blank")
     @Pattern(regexp = "(^$|[0-9]{11})",message = "PESEL  must be 11 digits")

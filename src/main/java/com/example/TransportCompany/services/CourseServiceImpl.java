@@ -1,6 +1,7 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.constant.CourseType;
+import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.repository.CourseRepository;
@@ -19,6 +20,7 @@ import static com.example.TransportCompany.constant.AppConstants.getNullProperty
 @Service
 public class CourseServiceImpl implements CourseService{
 
+    ClientService clientService;
     EmployeeService employeeService;
     @Autowired
     CourseRepository courseRepository;
@@ -30,17 +32,27 @@ public class CourseServiceImpl implements CourseService{
         if(course.getType()==null)
             course.setType(CourseType.OPEN);
         boolean isSaved=false;
-        course.setDistance(openRouteService.calculateDistance(course.getFromWhere(),course.getToWhere()));
-        Course course1=courseRepository.save(course);
+        Optional<Client> clientEntity = Optional.ofNullable(clientService.getClient(String.valueOf(course.getClientsId().getClientId())));
+        if (clientEntity.isPresent()) {
+            course.setDistance(openRouteService.calculateDistance(course.getFromWhere(), course.getToWhere()));
+            Course course1 = courseRepository.save(course);
+            clientEntity.get().getCourses().add(course1);
+            clientService.updateClient(clientEntity.get().getClientId(),clientEntity.get());
         if(course1!=null && course1.getCourseId()>0)
             isSaved=true;
+        }
         return isSaved;
     }
 
     @Override
     public List<Course> findCoursesWithType(String courseType ) {
         if(CourseType.isValid(courseType));
-        List<Course> courseList= courseRepository.findByType( CourseType.valueOf(courseType));
+        List<Course> courseList= courseRepository.findByType(CourseType.valueOf(courseType));
+        return courseList;
+    }
+    @Override
+    public List<Course> findAllCourses() {
+        List<Course> courseList= courseRepository.findAll();
         return courseList;
     }
 
@@ -59,8 +71,8 @@ public class CourseServiceImpl implements CourseService{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            BeanUtils.copyProperties(course.get(), update, getNullPropertyNames(update));
-            updatedCourse=  courseRepository.save(update);
+            BeanUtils.copyProperties(update, course.get(), getNullPropertyNames(update));
+            updatedCourse=  courseRepository.save(course.get());
         }
         else {
             throw new IllegalArgumentException("Course with the given id doesn't exists!");
@@ -84,12 +96,23 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public void deleteCourse(int id) {
+    public boolean deleteCourse(int id) {
         Optional<Course> course=courseRepository.findById(id);
-        Employee employee= course.get().getEmployee();
-        course.get().setEmployee(null);
-        courseRepository.save(course.get());
-     employeeService.deleteCourseFromTable(employee,course.get().getCourseId());
+    try {
+        if(course.isPresent())
+            if(course.get().getEmployee() != null){
+            Optional<Employee> employeeEntity=employeeService.getEmployeeById(course.get().getEmployee().getEmployeeId());
+            if (employeeEntity.isPresent()&& employeeEntity.get().getCourses().contains(course.get())){
+            employeeService.deleteCourseFromTable(employeeEntity.get(),course.get().getCourseId());
+            }
+        }
+        courseRepository.delete(course.get());
+        return true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override

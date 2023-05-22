@@ -3,8 +3,9 @@ package com.example.TransportCompany.constant;
 public enum CourseType {
         HANDLED("HANDLED"),
         CLOSED("CLOSED"),
+        DEFAULT("DEFAULT"),
         OPEN("OPEN");
-        private String name;
+        private final String name;
         CourseType(String name) {
                 this.name=name;
         }
