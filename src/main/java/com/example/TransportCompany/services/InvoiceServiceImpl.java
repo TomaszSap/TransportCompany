@@ -12,9 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -31,22 +29,26 @@ public class InvoiceServiceImpl implements  InvoiceService{
 
     @Override
     public Invoice addInvoice(Invoice invoice,int courseId) {
-        Course courseEntity=courseService.findCourse(courseId);
-        if(courseEntity.getType().getName()=="CLOSED"){
-            invoice.setCourseId(courseEntity.getCourseId());
-        invoice.setClientId(String.valueOf(courseEntity.getClientsId()));
-        invoice.setDateOfService(courseEntity.getUpdatedAt());
+        Optional<Course> courseEntity=courseService.findCourse(courseId);
+        if (courseEntity.isPresent()){
+        if(Objects.equals(courseEntity.get().getType().getName(), "CLOSED")){
+            invoice.setCourseId(courseEntity.get().getCourseId());
+        invoice.setClientId(courseEntity.get().getClientsId().getClientId());
+        invoice.setDateOfService(courseEntity.get().getUpdatedAt());
         setDate(invoice);
-        invoice.setValue(calculateValue(courseEntity.getDistance()));
+        invoice.setValue(calculateValue(courseEntity.get().getDistance()));
         return invoiceMongoDao.saveToMongo(invoice);}
         else {
-            throw new IllegalArgumentException("The course is not closed: " + courseEntity.getCourseId());
+            throw new IllegalArgumentException("The course is not closed: " + courseEntity.get().getCourseId());
+        }
+        }
+        else {
+            throw new IllegalArgumentException("The course is not exists: " + courseEntity.get().getCourseId());
         }
     }
 
     private BigDecimal calculateValue(double distance) {
-        BigDecimal ratePerKilometer = kilometerRate.multiply(BigDecimal.valueOf(distance));
-        return ratePerKilometer;
+        return  kilometerRate.multiply(BigDecimal.valueOf(distance));
     }
 
     private void setDate(Invoice invoice)
@@ -89,10 +91,10 @@ public class InvoiceServiceImpl implements  InvoiceService{
     public Invoice print(String invoiceId) {
         Invoice invoice=findById(invoiceId);
         Client client=clientService.getClient(invoice.getClientId());
-        Course course=courseService.findCourse(invoice.getCourseId());
+        Optional<Course> course=courseService.findCourse(invoice.getCourseId());
         PrintInvoice printInvoice= (PrintInvoice) invoice;
         printInvoice.setClient(client);
-        printInvoice.setCourse(course);
+        printInvoice.setCourse(course.get());
         return printInvoice;
     }
 

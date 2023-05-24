@@ -1,8 +1,10 @@
 package com.example.TransportCompany.controller;
 
+import com.example.TransportCompany.dto.EmployeeDto;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.repository.RoleRepository;
 import com.example.TransportCompany.services.EmployeeService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +19,32 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("admin")
+@RequestMapping("/admin")
 public class AdminController {
     private static final Logger logger= LoggerFactory.getLogger(AdminController.class);
+
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     EmployeeService employeeService;
+  //  @Autowired
+   // ModelMapper modelMapper;
     @Autowired
     RoleRepository roleRepository;
     @PostMapping (value = "/createUser")
-    public ResponseEntity<String> createUser(@Valid @RequestBody Employee employee, Errors errors)
+    public ResponseEntity<String> createUser(@Valid @RequestBody EmployeeDto employeeDto, Errors errors)
     {
-        logger.info("Called POST on endpoint /admin/createUser/ for argument {} ",employee);
-
+        logger.info("Called POST on endpoint /admin/createUser/ for argument {} ",employeeDto);
+     Employee employee = modelMapper.map(employeeDto, Employee.class);
         if (errors.hasErrors())
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .header(HttpHeaders.LOCATION, "redirect:/createUser")
                     .build();
         boolean isSaved=false;
-        if(employee!=null)
-        { isSaved=employeeService.addEmployee(employee);}
+      if(employee!=null)
+       {
+            isSaved=employeeService.addEmployee(employee);
+        }
 
         if(isSaved)
            return ResponseEntity.status(HttpStatus.CREATED)
@@ -48,10 +57,10 @@ public class AdminController {
 
     }
     @GetMapping("/user")
-    public ResponseEntity getUserById(@RequestParam int employeeId)
+    public ResponseEntity<Employee> getUserById(@RequestParam int employeeId)
     {
         logger.info("Called GET on endpoint /admin/user/ for argument employeeId: {} ",employeeId);
-        return ResponseEntity.ok().body(employeeService.getEmployeeById(employeeId));
+        return ResponseEntity.ok().body(employeeService.getEmployeeById(employeeId).get());
     }
     @DeleteMapping  (value = "/deleteUser")
     public ResponseEntity<Boolean> deleteUser(@RequestParam int employeeId)
@@ -62,10 +71,11 @@ public class AdminController {
         return ResponseEntity.ok().header(HttpHeaders.LOCATION,"redirect:/getUsers").body(isDeleted);
     }
     @PatchMapping("/updateUser")
-    public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody Employee employee)
+    public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody EmployeeDto employeeDto)
     {
-        logger.info("Called PATCH on endpoint /admin/updateUser/ for ID: {} and argument: {} ",id,employee);
+        Employee employee = modelMapper.map(employeeDto, Employee.class);
 
+        logger.info("Called PATCH on endpoint /admin/updateUser/ for ID: {} and argument: {} ",id,employee);
         Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
         if (existingEmployee.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -76,7 +86,7 @@ public class AdminController {
         }
     }
     @GetMapping("/getUsers")
-    public ResponseEntity<List> getAllUsers()
+    public ResponseEntity<List<Employee>> getAllUsers()
     {
         logger.info("Called GET on endpoint /admin//getUsers/");
 

@@ -4,6 +4,7 @@ import com.example.TransportCompany.model.Course;
 import org.json.JSONException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseService {
      boolean saveCourse(Course course) throws JSONException;
@@ -12,5 +13,5 @@ public interface CourseService {
       boolean updateCourse(int id , Course update);
       void updateCourse(Course update);
      boolean deleteCourse(int id);
-     Course findCourse(int id);
+     Optional<Course> findCourse(int id);
 }

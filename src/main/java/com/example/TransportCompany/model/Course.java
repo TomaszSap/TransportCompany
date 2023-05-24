@@ -2,7 +2,7 @@ package com.example.TransportCompany.model;
 
 import com.example.TransportCompany.constant.CourseType;
 import com.example.TransportCompany.sql.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Getter
@@ -19,6 +20,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Table(name = "courses")
 //ToDo
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "courseId")
+
 public class Course extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
@@ -37,8 +40,13 @@ public class Course extends BaseEntity {
     private CourseType type;
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "employee_id",referencedColumnName = "employee_id",nullable = true)
+    @JsonIgnoreProperties(value = {"courses", "hibernateLazyInitializer"})
+
     private Employee employee;
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "clients_id", referencedColumnName = "client_id", nullable = true)
+    @NotNull
+    @JsonIgnoreProperties(value = {"courses", "hibernateLazyInitializer"})
+
     private Client clientsId;
 }

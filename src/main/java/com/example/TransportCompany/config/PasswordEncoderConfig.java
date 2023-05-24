@@ -15,6 +15,6 @@ public class PasswordEncoderConfig {
     }
 
     public static boolean matches(String password, String encodedPassword) {
-        return PASSWORD_ENCODER.matches(password, encodedPassword); // porównywanie hasła z zapisanym w bazie danych
+        return PASSWORD_ENCODER.matches(password, encodedPassword);
     }
 }

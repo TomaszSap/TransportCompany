@@ -11,6 +11,7 @@ import com.example.TransportCompany.repository.RoleRepository;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-//coś do dokończenia
+import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
     private static final Logger logger= LoggerFactory.getLogger(EmployeeServiceImpl.class);
@@ -71,8 +73,10 @@ public class EmployeeServiceImpl implements EmployeeService{
             logger.error("Email is in usage !");
             return isSaved;
         }
-        if(employee!=null && employee.getEmployeeId()>0)
+        if(employee!=null && employee.getEmployeeId()>0){
             isSaved=true;
+            logger.debug("added to employeeRepository: ",employee);
+        }
         return isSaved;
     }
 
@@ -103,8 +107,6 @@ public class EmployeeServiceImpl implements EmployeeService{
       isDeleted=true;
        }
         return isDeleted;
-        //ModelAndView modelAndView=new ModelAndView("redirect:/admin/displayClasses");
-    //    return modelAndView;
     }
 
 
@@ -126,36 +128,30 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         return isUpdated;
     }
-    @Override
-    public boolean addCourse(int driverId, int courseId) {
-        Optional<Employee> employeeEntity=employeeRepository.findById(driverId);
-        Course courseEntity = courseService.findCourse(courseId);
-        if (courseEntity == null && !(courseEntity.getCourseId() > 0)&& employeeEntity.isPresent()) //validation if is possible
-        {
-            if (courseEntity.getEmployee()!=null)
-            {
-                var x=employeeRepository.findById(courseEntity.getEmployee().getEmployeeId());
-                x.get().getCourses().remove(courseEntity.getCourseId());
-                employeeRepository.save(x.get());
-                courseEntity.setEmployee(null);
-            }
-            courseEntity.setEmployee(employeeEntity.get());
-            try {
-                courseService.saveCourse(courseEntity);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            employeeEntity.get().getCourses().add(courseEntity);
-            employeeRepository.save(employeeEntity.get());
-            return true;
-           }
-        return false;
+    public boolean updateEmployee(int employeeId,Employee employee)
+    {
+        boolean isUpdated=false;
+        Optional<Employee> employeeEntity=employeeRepository.findById(employeeId);
+        if(employeeEntity.isPresent()){
+            if(employee.getRole().getRoleName()!=employeeEntity.get().getRole().getRoleName() &&  RoleType.isValid(employee.getRole().getRoleName()))
+                changeRole(employeeEntity.get().getEmployeeId(), employee.getRole().toString());
+            else
+                return isUpdated;
+            employee.setUpdatedAt(LocalDateTime.now());
+            //ToDo
+            employee.setUpdatedBy("ADMIN");
+            BeanUtils.copyProperties(employee,employeeEntity,getNullPropertyNames(employee));
+            employee=employeeRepository.save(employee);
+            if(employee!=null && employee.getEmployeeId()>0)
+                isUpdated=true;
+        }
+        return isUpdated;
     }
 
     @Override
     public boolean deleteCourse(int employeeId,int courseId) {
         Optional <Employee> employeeEntity=employeeRepository.findById(employeeId);
-        Optional<Course> courseEntity= Optional.ofNullable(courseService.findCourse(courseId));
+        Optional<Course> courseEntity= courseService.findCourse(courseId);
         if(employeeEntity.isPresent()&&courseEntity.isPresent() && employeeEntity.get().getCourses().contains(courseEntity.get()))
         {
             employeeEntity.get().getCourses().remove(courseEntity.get());

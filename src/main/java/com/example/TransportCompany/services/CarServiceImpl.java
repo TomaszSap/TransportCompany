@@ -4,11 +4,14 @@ import com.example.TransportCompany.model.Car;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.repository.CarRepository;
 import com.example.TransportCompany.repository.EmployeeRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
 @Service
 public class CarServiceImpl implements CarService
@@ -72,8 +75,25 @@ public class CarServiceImpl implements CarService
         var carEntity=carRepository.findById(carId);
         if(carEntity.isPresent())
         {
+            if(update.getEmployee().getEmployeeId()!=carEntity.get().getEmployee().getEmployeeId())
+            {
+               changeCarOwner(carEntity.get().getEmployee().getEmployeeId(),update);
+            }
             update.setId(carEntity.get().getId());
+            BeanUtils.copyProperties(update,carEntity,getNullPropertyNames(update));
             carRepository.save(update);
+        }
+    }
+
+    private void changeCarOwner(int employeeId, Car update) {
+        var employee=employeeRepository.findById(employeeId);
+        employee.get().setCar(null);
+        employeeRepository.save(employee.get());
+        var newEmployee=employeeRepository.findById(update.getEmployee().getEmployeeId());
+        if (newEmployee.isPresent()&& newEmployee.get().getCar()==null)
+        {
+            newEmployee.get().setCar(update);
+            employeeRepository.save(newEmployee.get());
         }
     }
 

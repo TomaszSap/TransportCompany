@@ -70,9 +70,9 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public Client getClient(String clientId) {
+    public Client getClient(int clientId) {
         try {
-            Optional<Client> clientEntity=clientRepository.findById(Integer.valueOf(clientId));
+            Optional<Client> clientEntity=clientRepository.findById(clientId);
             if(!clientEntity.isEmpty())
             {
                 return clientEntity.get();

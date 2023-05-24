@@ -15,12 +15,12 @@ public interface EmployeeService {
      boolean addEmployee(Employee employee);
 
      boolean deleteEmployee(int employeeId);
-     boolean addCourse(int driverId, int courseId);
      boolean deleteCourse(int employeeId,int courseId);
      void assignCar(int employeeId,int carId) throws Exception;
      boolean unassignCar(int employeeId,int carId);
      List<Employee> getAllEmployers();
       boolean updateEmployee(Employee employee);
+      boolean updateEmployee(int employeeId,Employee employee);
      Optional<Employee> getEmployeeById(int employeeId);
      List<Employee> getEmployeersByRole(RoleType roleType);
 

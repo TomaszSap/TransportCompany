@@ -1,6 +1,7 @@
 package com.example.TransportCompany.model;
 
 import com.example.TransportCompany.sql.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -14,5 +15,6 @@ public class Role extends BaseEntity {
     @GenericGenerator(name = "native",strategy = "native")
     @Column(name = "role_id")
     private int roleId;
+    @JsonProperty("roleName")
     private String roleName;
 }

@@ -30,31 +30,20 @@ public class ForwarderController {
     EmployeeService employeeService;
 
     @PostMapping("/assignCourse")
-    public ResponseEntity<String> assignCourse(@RequestParam int driverId, @RequestBody @Valid int courseId)
+    public ResponseEntity<String> assignCourse(@RequestParam int driverId, @RequestBody @Valid Course course)
     {
 
-        boolean isAssigned=employeeService.addCourse(driverId,courseId);
+        boolean isAssigned=courseService.updateCourse(driverId,course);
         if (isAssigned)
         {
            return ResponseEntity.status(HttpStatus.OK).build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("failed to assign Course !");
     }
-    @PostMapping("/forwardCourse")
-    public ResponseEntity<String> forwardCourse(@RequestParam int driverId, @RequestBody @Valid int courseId)
-    {
-
-        boolean isAssigned=employeeService.addCourse(driverId,courseId);
-        if (isAssigned)
-        {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("failed to forward Course !");
-    }
     @PostMapping("/addCourse")
     public ResponseEntity<Boolean> addCourse(@Valid @RequestBody Course course, Errors errors)
     {
-        logger.debug("Called GET on endpoint forwarder/addCourse/");
+        logger.debug("Called Post on endpoint forwarder/addCourse/");
         if (errors.hasErrors()) {
             logger.error("Course from validation failed due to: "+ errors);
             throw new ValidationException(String.valueOf(errors));

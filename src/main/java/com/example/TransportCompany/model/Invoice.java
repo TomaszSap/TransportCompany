@@ -28,7 +28,7 @@ public class Invoice extends DaoModel {
     private Date dateOfPayment;
     private BigDecimal value;
     private String service="Transport";
-    private String clientId;
+    private int clientId;
     private BigDecimal totalAmount;
     private int courseId;
 }

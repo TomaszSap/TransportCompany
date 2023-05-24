@@ -20,7 +20,9 @@ import static com.example.TransportCompany.constant.AppConstants.getNullProperty
 @Service
 public class CourseServiceImpl implements CourseService{
 
+    @Autowired
     ClientService clientService;
+
     EmployeeService employeeService;
     @Autowired
     CourseRepository courseRepository;
@@ -28,16 +30,20 @@ public class CourseServiceImpl implements CourseService{
     OpenRouteService openRouteService;
     @SneakyThrows
     @Override
-    public boolean saveCourse(Course course) throws JSONException {
+    public boolean saveCourse(Course course)  {
         if(course.getType()==null)
             course.setType(CourseType.OPEN);
         boolean isSaved=false;
-        Optional<Client> clientEntity = Optional.ofNullable(clientService.getClient(String.valueOf(course.getClientsId().getClientId())));
+        Optional<Client> clientEntity = Optional.ofNullable(clientService.getClient(course.getClientsId().getClientId()));
         if (clientEntity.isPresent()) {
             course.setDistance(openRouteService.calculateDistance(course.getFromWhere(), course.getToWhere()));
             Course course1 = courseRepository.save(course);
             clientEntity.get().getCourses().add(course1);
             clientService.updateClient(clientEntity.get().getClientId(),clientEntity.get());
+            if (course.getEmployee()!=null)
+            {
+                assignCourse(course);
+            }
         if(course1!=null && course1.getCourseId()>0)
             isSaved=true;
         }
@@ -55,14 +61,23 @@ public class CourseServiceImpl implements CourseService{
         List<Course> courseList= courseRepository.findAll();
         return courseList;
     }
+    private void assignCourse( Course update)
+    {
 
+        var employeeEntity=employeeService.getEmployeeById(update.getEmployee().getEmployeeId());
+        if (employeeEntity.isPresent())
+        {
+            employeeEntity.get().getCourses().add(update);
+            employeeService.updateEmployee(employeeEntity.get());
+        }
+    }
 
     @Override
     public boolean updateCourse(int id , Course update) {
         boolean isUpdated=false;
-        Optional<Course> course=courseRepository.findById(id);
+        Optional<Course> courseEntity=courseRepository.findById(id);
         Course updatedCourse;
-        if (!course.isEmpty() && course.get().getCourseId()>0)
+        if (!courseEntity.isEmpty() && courseEntity.get().getCourseId()>0)
         {
             try {
                 update.setDistance(openRouteService.calculateDistance(update.getFromWhere(),update.getToWhere()));
@@ -71,8 +86,16 @@ public class CourseServiceImpl implements CourseService{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            BeanUtils.copyProperties(update, course.get(), getNullPropertyNames(update));
-            updatedCourse=  courseRepository.save(course.get());
+            if (update.getClientsId().getClientId()!=courseEntity.get().getClientsId().getClientId())
+            {
+                changeClient(update,courseEntity.get());
+            }
+            if (update.getEmployee().getEmployeeId()!=courseEntity.get().getEmployee().getEmployeeId() || courseEntity.get().getEmployee()==null)
+            {
+                changeEmployee(update,courseEntity.get());
+            }
+            BeanUtils.copyProperties(update, courseEntity.get(), getNullPropertyNames(update));
+            updatedCourse=  courseRepository.save(courseEntity.get());
         }
         else {
             throw new IllegalArgumentException("Course with the given id doesn't exists!");
@@ -81,7 +104,30 @@ public class CourseServiceImpl implements CourseService{
             isUpdated=true;
         return isUpdated;
     }
+    private void changeEmployee(Course update, Course courseEntity) {
+        if (courseEntity.getEmployee()==null)
+        {
+            assignCourse(courseEntity);
+        }
+        else {
+        Employee updateEmployee= courseEntity.getEmployee();
+        updateEmployee.getCourses().remove(courseEntity);
+        Employee newEmployee=update.getEmployee();
+        newEmployee.getCourses().add(update);
+        employeeService.updateEmployee(courseEntity.getEmployee().getEmployeeId(),updateEmployee);
+        employeeService.updateEmployee(newEmployee.getEmployeeId(),newEmployee);
+        }
+    }
 
+    private  void changeClient(Course update,Course courseEntity)
+    {
+        Client updateClient= courseEntity.getClientsId();
+        updateClient.getCourses().remove(courseEntity);
+        Client newClient=update.getClientsId();
+        newClient.getCourses().add(update);
+        clientService.updateClient(courseEntity.getClientsId().getClientId(),updateClient);
+        clientService.updateClient(newClient.getClientId(),newClient);
+    }
     @Override
     public void updateCourse(Course update) {
         Optional<Course> courseEntity=courseRepository.findById(update.getCourseId());
@@ -116,9 +162,8 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public Course findCourse(int id) {
-        Optional<Course> course=courseRepository.findById(id);
-        return course.get();
+    public Optional<Course> findCourse(int id) {
+        return Optional.of(courseRepository.findById(id).get());
     }
 
 

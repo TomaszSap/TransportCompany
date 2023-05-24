@@ -12,5 +12,5 @@ public interface ClientService {
     Object updateClient(int clientId, Client client);
     List<Client> getAllClients();
 
-    Client getClient(String clientId);
+    Client getClient(int clientId);
 }

@@ -2,6 +2,8 @@ package com.example.TransportCompany.model;
 
 import com.example.TransportCompany.sql.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -44,13 +46,15 @@ public class Employee extends BaseEntity {
             "[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?" +
             ":[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])",message = "Please provide a valid email address")
     @Transient
+    @JsonProperty("confirmEmail")
+    @JsonIgnore
     private String confirmEmail;
     @NotBlank(message = "Mobile number must not be blank")
     @Pattern(regexp = "(^$|[0-9]{9})",message = "Mobile number must be 9 digits")
+    @JsonProperty("mobileNumber")
     private String mobileNumber;
     @NotBlank(message = "PESEL must not be blank")
     @Pattern(regexp = "(^$|[0-9]{11})",message = "PESEL  must be 11 digits")
-
     String pesel;
     @OneToOne(fetch =FetchType.EAGER,cascade = CascadeType.PERSIST,targetEntity = Car.class)
     @JoinColumn(name ="car_id",referencedColumnName = "car_id",nullable = true)
@@ -66,9 +70,12 @@ public class Employee extends BaseEntity {
     @NotBlank(message = "Confirm password must not be blank")
     @Size(min = 8,message = " Confirm password must be at least 8 characters long")
     @Transient
+    @JsonProperty("confirmPwd")
+    @JsonIgnore
     private String confirmPwd;
     @OneToMany(mappedBy = "employee",fetch = FetchType.LAZY,
             cascade = CascadeType.PERSIST, targetEntity = Course.class)
     // @JoinColumn(name = "employee_id",referencedColumnName = "personId",nullable = true)
+    @JsonIgnoreProperties(value = {"employee", "hibernateLazyInitializer"})
     private Set<Course> courses;
 }
