@@ -34,7 +34,7 @@ public class CourseServiceImpl implements CourseService{
         if(course.getType()==null)
             course.setType(CourseType.OPEN);
         boolean isSaved=false;
-        Optional<Client> clientEntity = Optional.ofNullable(clientService.getClient(course.getClientsId().getClientId()));
+        Optional<Client> clientEntity =clientService.getClient(course.getClientsId().getClientId());
         if (clientEntity.isPresent()) {
             course.setDistance(openRouteService.calculateDistance(course.getFromWhere(), course.getToWhere()));
             Course course1 = courseRepository.save(course);

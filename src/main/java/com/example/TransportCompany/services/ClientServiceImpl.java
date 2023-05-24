@@ -70,18 +70,7 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public Client getClient(int clientId) {
-        try {
-            Optional<Client> clientEntity=clientRepository.findById(clientId);
-            if(!clientEntity.isEmpty())
-            {
-                return clientEntity.get();
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("error during getClient: "+ e);
-        }
-          return null;
+    public Optional<Client> getClient(int clientId) {
+    return clientRepository.findById(clientId);
     }
 }

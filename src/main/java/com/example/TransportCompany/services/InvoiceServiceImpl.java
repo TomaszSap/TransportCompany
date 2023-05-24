@@ -1,10 +1,8 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.Mongo.InvoiceMongoDao;
-import com.example.TransportCompany.model.Client;
-import com.example.TransportCompany.model.Course;
-import com.example.TransportCompany.model.Invoice;
-import com.example.TransportCompany.model.PrintInvoice;
+import com.example.TransportCompany.model.*;
+import com.example.TransportCompany.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -22,6 +20,9 @@ public class InvoiceServiceImpl implements  InvoiceService{
     @Autowired
     ClientService clientService;
     @Autowired
+
+    CompanyRepository companyRepository;
+    @Autowired
     InvoiceMongoDao invoiceMongoDao;
     private final Calendar calendar = Calendar.getInstance();
     @Value("${per_km_rate}")
@@ -36,7 +37,7 @@ public class InvoiceServiceImpl implements  InvoiceService{
         invoice.setClientId(courseEntity.get().getClientsId().getClientId());
         invoice.setDateOfService(courseEntity.get().getUpdatedAt());
         setDate(invoice);
-        invoice.setValue(calculateValue(courseEntity.get().getDistance()));
+        invoice.setTotalAmount(calculateValue(courseEntity.get().getDistance(),invoice.getVat()));
         return invoiceMongoDao.saveToMongo(invoice);}
         else {
             throw new IllegalArgumentException("The course is not closed: " + courseEntity.get().getCourseId());
@@ -47,8 +48,10 @@ public class InvoiceServiceImpl implements  InvoiceService{
         }
     }
 
-    private BigDecimal calculateValue(double distance) {
-        return  kilometerRate.multiply(BigDecimal.valueOf(distance));
+    private BigDecimal calculateValue(double distance,int vat) {
+        var x=kilometerRate.multiply(BigDecimal.valueOf(distance));
+        var vatAmount=x.multiply(BigDecimal.valueOf(vat).divide(BigDecimal.valueOf(10)));
+        return  x.multiply(vatAmount);
     }
 
     private void setDate(Invoice invoice)
@@ -90,10 +93,12 @@ public class InvoiceServiceImpl implements  InvoiceService{
     @Override
     public Invoice print(String invoiceId) {
         Invoice invoice=findById(invoiceId);
-        Client client=clientService.getClient(invoice.getClientId());
+        Optional<Client> client=clientService.getClient(invoice.getClientId());
         Optional<Course> course=courseService.findCourse(invoice.getCourseId());
+        Optional<Company> company=companyRepository.findById(invoice.getCompanyId());
         PrintInvoice printInvoice= (PrintInvoice) invoice;
-        printInvoice.setClient(client);
+        printInvoice.setClient(client.get());
+        printInvoice.setCompany(company.get());
         printInvoice.setCourse(course.get());
         return printInvoice;
     }

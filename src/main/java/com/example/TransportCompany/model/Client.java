@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -47,6 +48,9 @@ public class Client extends BaseEntity {
     @Column(unique = true)
     @Pattern(regexp = "(^$|[0-9]{9})",message = "NIP must be 9 digits")
     private String NIP;
+    @NotBlank(message = "Address must not be blank")
+    @NotNull
+    private String address;
     @NotBlank(message = "Company name must be not blank")
     @Size(min=2 , max=100, message = "Company name  should be min 2 symbols and less than 100")
     private String company;

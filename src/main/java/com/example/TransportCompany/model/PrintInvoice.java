@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class PrintInvoice extends Invoice{
     private Client client;
     private Course course;
-
+    private Company company;
 }

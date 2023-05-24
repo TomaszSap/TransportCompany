@@ -33,6 +33,7 @@ CREATE TABLE if not exists courses (
   course_type VARCHAR(255),
   distance double,
   client_id INT,
+  address VARCHAR(255),
   created_at TIMESTAMP NOT NULL,
   created_by varchar(50) NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,
@@ -64,6 +65,18 @@ CREATE TABLE if not exists roles (
   updated_at TIMESTAMP DEFAULT NULL,
   updated_by varchar(50) DEFAULT NULL,
   PRIMARY KEY (role_id)
+);
+CREATE TABLE if not exists company (
+company_id int NOT NULL AUTO_INCREMENT,
+name varchar(255) NOT NULL,
+address varchar(255) NOT NULL,
+nip varchar(255) NOT NULL,
+phoneNumber varchar(50) NOT NULL,
+created_at TIMESTAMP NOT NULL,
+created_by varchar(50) NOT NULL,
+updated_at TIMESTAMP DEFAULT NULL,
+updated_by varchar(50) DEFAULT NULL,
+PRIMARY KEY (company_id)
 );
 ALTER TABLE employers
     add role_id int;

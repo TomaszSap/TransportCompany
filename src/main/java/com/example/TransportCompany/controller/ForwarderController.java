@@ -1,11 +1,13 @@
 package com.example.TransportCompany.controller;
 
 import com.example.TransportCompany.constant.RoleType;
+import com.example.TransportCompany.dto.CourseDTO;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.services.CourseService;
 import com.example.TransportCompany.services.EmployeeService;
 import org.json.JSONException;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +25,17 @@ import java.util.List;
 @RequestMapping("/forwarder")
 public class ForwarderController {
     private static final Logger logger= LoggerFactory.getLogger(ForwarderController.class);
-
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     CourseService courseService;
     @Autowired
     EmployeeService employeeService;
 
     @PostMapping("/assignCourse")
-    public ResponseEntity<String> assignCourse(@RequestParam int driverId, @RequestBody @Valid Course course)
+    public ResponseEntity<String> assignCourse(@RequestParam int driverId, @RequestBody @Valid CourseDTO courseDto)
     {
+        Course course=modelMapper.map(courseDto,Course.class);
 
         boolean isAssigned=courseService.updateCourse(driverId,course);
         if (isAssigned)
@@ -41,8 +45,9 @@ public class ForwarderController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("failed to assign Course !");
     }
     @PostMapping("/addCourse")
-    public ResponseEntity<Boolean> addCourse(@Valid @RequestBody Course course, Errors errors)
+    public ResponseEntity<Boolean> addCourse(@Valid @RequestBody CourseDTO courseDto, Errors errors)
     {
+        Course course=modelMapper.map(courseDto,Course.class);
         logger.debug("Called Post on endpoint forwarder/addCourse/");
         if (errors.hasErrors()) {
             logger.error("Course from validation failed due to: "+ errors);

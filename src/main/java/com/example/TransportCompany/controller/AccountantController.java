@@ -1,10 +1,12 @@
 package com.example.TransportCompany.controller;
 
+import com.example.TransportCompany.dto.ClientDTO;
 import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.model.Invoice;
 import com.example.TransportCompany.model.Response;
 import com.example.TransportCompany.services.ClientService;
 import com.example.TransportCompany.services.InvoiceService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class AccountantController {
     @Autowired
     private InvoiceService invoiceService;
     @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
     private ClientService clientService;
     @PostMapping(value = "/createInvoice")
     public ResponseEntity<Response> createInvoice(@Valid @RequestBody Invoice invoice,@RequestParam int courseId)
@@ -41,8 +45,9 @@ public class AccountantController {
         }
     }
     @PostMapping(value = "/addClient")
-    public ResponseEntity<Response> addClient(@Valid @RequestBody Client client, Errors errors)
+    public ResponseEntity<Response> addClient(@Valid @RequestBody ClientDTO clientDTO, Errors errors)
     {
+        Client client=modelMapper.map(clientDTO,Client.class);
         if (errors.hasErrors()) {
             logger.error("Client from validation failed due to: "+ errors);
             throw new ValidationException(String.valueOf(errors));
@@ -55,7 +60,7 @@ public class AccountantController {
             return ResponseEntity.status(HttpStatus.CREATED).header("isClientSaved","true").body(response);}
         else {
             response.setStatusCode("400");
-            response.setStatusCode("Invalid values!");
+            response.setStatusCode("Error while saving client !");
             return ResponseEntity.badRequest().header("isClientSaved","false").body(response);
         }
     }
@@ -77,8 +82,10 @@ public class AccountantController {
     }
     @PostMapping(value = "/updateClient")
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> updateClient(@RequestParam int clientId,@Valid @RequestBody Client client)
+    public ResponseEntity<Object> updateClient(@RequestParam int clientId,@RequestBody ClientDTO clientDTO)
     {
+        Client client=modelMapper.map(clientDTO,Client.class);
+
         Optional<Object> iSaved = Optional.ofNullable(clientService.updateClient(clientId,client));
 
         return iSaved.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body("Failed to update Client!"));

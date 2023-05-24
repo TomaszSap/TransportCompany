@@ -4,6 +4,7 @@ import com.example.TransportCompany.model.Client;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface ClientService {
@@ -12,5 +13,5 @@ public interface ClientService {
     Object updateClient(int clientId, Client client);
     List<Client> getAllClients();
 
-    Client getClient(int clientId);
+    Optional<Client> getClient(int clientId);
 }

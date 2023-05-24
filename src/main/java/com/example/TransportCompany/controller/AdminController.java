@@ -1,12 +1,15 @@
 package com.example.TransportCompany.controller;
 
 import com.example.TransportCompany.dto.EmployeeDto;
+import com.example.TransportCompany.model.Company;
 import com.example.TransportCompany.model.Employee;
+import com.example.TransportCompany.repository.CompanyRepository;
 import com.example.TransportCompany.repository.RoleRepository;
 import com.example.TransportCompany.services.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -27,6 +32,8 @@ public class AdminController {
     private ModelMapper modelMapper;
     @Autowired
     EmployeeService employeeService;
+    @Autowired
+    CompanyRepository companyRepository;
   //  @Autowired
    // ModelMapper modelMapper;
     @Autowired
@@ -59,7 +66,7 @@ public class AdminController {
     @GetMapping("/user")
     public ResponseEntity<Employee> getUserById(@RequestParam int employeeId)
     {
-        logger.info("Called GET on endpoint /admin/user/ for argument employeeId: {} ",employeeId);
+        logger.debug("Called GET on endpoint /admin/user/ for argument employeeId: {} ",employeeId);
         return ResponseEntity.ok().body(employeeService.getEmployeeById(employeeId).get());
     }
     @DeleteMapping  (value = "/deleteUser")
@@ -69,6 +76,25 @@ public class AdminController {
         boolean isDeleted=employeeService.deleteEmployee(employeeId);
 
         return ResponseEntity.ok().header(HttpHeaders.LOCATION,"redirect:/getUsers").body(isDeleted);
+    }
+    @PostMapping   (value = "/assignCompany")
+    public ResponseEntity<String> assignCompany(@Valid @RequestBody Company company)
+    {
+        logger.debug("Called POST on endpoint /admin/assignCompany/ for argument {} ", company);
+            companyRepository.save(company);
+        return ResponseEntity.ok().body("Success");
+    }
+    @PostMapping   (value = "/updateCompany")
+    public ResponseEntity<Boolean> updateCompany(@RequestParam int companyId,@RequestBody Company company)
+    {
+        logger.debug("Called POST on endpoint /admin/assignCompany/ for argument {} ", company);
+        var companyEntity=companyRepository.findById(companyId);
+        if (companyEntity.isPresent())
+        {
+            BeanUtils.copyProperties(company,companyEntity.get(),getNullPropertyNames(company));
+            companyRepository.save(companyEntity.get());
+        }
+        return ResponseEntity.ok().build();
     }
     @PatchMapping("/updateUser")
     public ResponseEntity<String> updateUser(@RequestParam int id, @Valid @RequestBody EmployeeDto employeeDto)
