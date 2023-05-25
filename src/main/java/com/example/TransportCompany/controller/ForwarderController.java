@@ -33,11 +33,11 @@ public class ForwarderController {
     EmployeeService employeeService;
 
     @PostMapping("/assignCourse")
-    public ResponseEntity<String> assignCourse(@RequestParam int driverId, @RequestBody @Valid CourseDTO courseDto)
+    public ResponseEntity<String> assignCourse(@RequestParam int id, @RequestBody @Valid CourseDTO courseDto)
     {
         Course course=modelMapper.map(courseDto,Course.class);
 
-        boolean isAssigned=courseService.updateCourse(driverId,course);
+        boolean isAssigned=courseService.updateCourse(id,course);
         if (isAssigned)
         {
            return ResponseEntity.status(HttpStatus.OK).build();
