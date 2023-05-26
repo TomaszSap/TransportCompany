@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.Collection;
@@ -17,7 +18,7 @@ public class MongoUtil {
     public static final String MODIFIED_BY="TransportCompany";
     private static final Logger logger = LoggerFactory.getLogger(MongoUtil.class);
 
-    private static ObjectMapper objectMapper;
+    private static ObjectMapper objectMapper=new ObjectMapper();
     public static <T> List<T> convertFromMongo(Collection<Document> documents, Class<T> clazz) {
         if (documents == null) {
             return Collections.emptyList();
@@ -57,6 +58,7 @@ public class MongoUtil {
         }
         Document document= new Document();
         try{
+            objectMapper.findAndRegisterModules();
             document = Document.parse(objectMapper.writeValueAsString(object));
         }
           catch ( JsonProcessingException e)

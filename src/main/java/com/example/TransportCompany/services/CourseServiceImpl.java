@@ -80,14 +80,15 @@ public class CourseServiceImpl implements CourseService{
         Course updatedCourse;
         if (courseEntity.isPresent() && courseEntity.get().getCourseId()>0)
         {
-            if(update.getToWhere()!=null &&update.getToWhere()!=null&&(update.getToWhere()!=courseEntity.get().getToWhere()|| update.getFromWhere()!=courseEntity.get().getFromWhere()))
+            if(update.getToWhere()!=null &&update.getToWhere()!=null&&(!update.getToWhere().equals(courseEntity.get().getToWhere())|| !update.getFromWhere().equals(courseEntity.get().getFromWhere())))
             {try {
                 update.setDistance(openRouteService.calculateDistance(update.getFromWhere(),update.getToWhere()));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }}
+            }
+            }
             if (update.getClientsId()!=null && update.getClientsId().getClientId()!=courseEntity.get().getClientsId().getClientId())
             {
                 changeClient(update,courseEntity.get());

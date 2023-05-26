@@ -21,8 +21,8 @@ public abstract class AbstractMongoDao<T extends DaoModel> {
     public abstract MongoTemplate getMongoTemplate();
     protected  T save(T object, CollectionEnum collectionName){
             final Document objectToSave = MongoUtil.convertToMongo(object);
-            logger.debug("save to collection {}, values: {}", collectionName.getName());
-            final Document result = getMongoTemplate().save(objectToSave, collectionName.getName());
+            logger.debug("save to collection {}, values: {}", collectionName);
+            final Document result = getMongoTemplate().save(objectToSave,collectionName.name());
             T resultObject = MongoUtil.convertFromMongo(result, (Class<T>) object.getClass());
             logger.trace("save return {}",resultObject);
             return resultObject;

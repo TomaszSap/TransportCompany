@@ -16,11 +16,10 @@ services:
     image: mongo
     container_name: transport-company-mongo
     environment:
-      uri: mongodb://localhost:27017/invoices-transport-company
       MONGO_INITDB_DATABASE: invoices-transport-company
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:
-      - "27017:27017"
+      - 27017:27017
 volumes:
   db_data:

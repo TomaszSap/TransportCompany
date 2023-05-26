@@ -34,10 +34,10 @@ public class InvoiceServiceImpl implements  InvoiceService{
         if (courseEntity.isPresent()){
         if(Objects.equals(courseEntity.get().getType().getName(), "CLOSED")){
             invoice.setCourseId(courseEntity.get().getCourseId());
-        invoice.setClientId(courseEntity.get().getClientsId().getClientId());
+        invoice.setClientId(String.valueOf(courseEntity.get().getClientsId().getClientId()));
         invoice.setDateOfService(courseEntity.get().getUpdatedAt());
         setDate(invoice);
-        invoice.setTotalAmount(calculateValue(courseEntity.get().getDistance(),invoice.getVat()));
+        invoice.setTotalAmount(calculateValue(courseEntity.get().getDistance(), Integer.parseInt(invoice.getVat())));
         return invoiceMongoDao.saveToMongo(invoice);}
         else {
             throw new IllegalArgumentException("The course is not closed: " + courseEntity.get().getCourseId());
@@ -93,9 +93,9 @@ public class InvoiceServiceImpl implements  InvoiceService{
     @Override
     public Invoice print(String invoiceId) {
         Invoice invoice=findById(invoiceId);
-        Optional<Client> client=clientService.getClient(invoice.getClientId());
+        Optional<Client> client=clientService.getClient(Integer.parseInt(invoice.getClientId()));
         Optional<Course> course=courseService.findCourse(invoice.getCourseId());
-        Optional<Company> company=companyRepository.findById(invoice.getCompanyId());
+        Optional<Company> company=companyRepository.findById(Integer.valueOf(invoice.getCompanyId()));
         PrintInvoice printInvoice= (PrintInvoice) invoice;
         printInvoice.setClient(client.get());
         printInvoice.setCompany(company.get());
