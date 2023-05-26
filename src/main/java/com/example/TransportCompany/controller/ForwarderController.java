@@ -32,9 +32,11 @@ public class ForwarderController {
     @Autowired
     EmployeeService employeeService;
 
-    @PostMapping("/assignCourse")
-    public ResponseEntity<String> assignCourse(@RequestParam int id, @RequestBody @Valid CourseDTO courseDto)
+    @PostMapping("/updateCourse")
+    public ResponseEntity<String> updateCourse(@RequestParam int id, @RequestBody @Valid CourseDTO courseDto)
     {
+        logger.debug("Called Post on endpoint forwarder/updateCourse/");
+
         Course course=modelMapper.map(courseDto,Course.class);
 
         boolean isAssigned=courseService.updateCourse(id,course);

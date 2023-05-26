@@ -6,6 +6,7 @@ import com.example.TransportCompany.model.Car;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.model.Role;
+import com.example.TransportCompany.repository.CourseRepository;
 import com.example.TransportCompany.repository.EmployeeRepository;
 import com.example.TransportCompany.repository.RoleRepository;
 import org.json.JSONException;
@@ -32,9 +33,9 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Autowired
     CarService carService;
     @Autowired
-    RoleRepository roleRepository;
+    CourseRepository courseRepository;
     @Autowired
-    CourseService courseService;
+    RoleRepository roleRepository;
     @Override
     public void deleteCourseFromTable(Employee employee, int id) {
         Course course=employee.getCourses().stream().filter(item ->item.getCourseId()==id).findFirst().orElse(null);
@@ -96,11 +97,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         for(Course course:employee.get().getCourses())
         {
             course.setEmployee(null);
-            try {
-                courseService.saveCourse(course);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+            courseRepository.save(course);
         }
         employee.get().setRole(null);
       employeeRepository.deleteById(employeeId);
@@ -148,20 +145,6 @@ public class EmployeeServiceImpl implements EmployeeService{
         return isUpdated;
     }
 
-    @Override
-    public boolean deleteCourse(int employeeId,int courseId) {
-        Optional <Employee> employeeEntity=employeeRepository.findById(employeeId);
-        Optional<Course> courseEntity= courseService.findCourse(courseId);
-        if(employeeEntity.isPresent()&&courseEntity.isPresent() && employeeEntity.get().getCourses().contains(courseEntity.get()))
-        {
-            employeeEntity.get().getCourses().remove(courseEntity.get());
-            employeeRepository.save(employeeEntity.get());
-            courseEntity.get().setEmployee(null);
-            courseService.updateCourse(courseEntity.get());
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public void assignCar(int employeeId,int carId) throws Exception {

@@ -1,7 +1,5 @@
 package com.example.TransportCompany.validations;
-
 import com.example.TransportCompany.annotation.PasswordValidator;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;

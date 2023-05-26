@@ -29,7 +29,6 @@ CREATE TABLE if not exists courses (
   course_id INT NOT NULL AUTO_INCREMENT,
   fromWhere VARCHAR(255),
   toWhere VARCHAR(255),
-  type VARCHAR(255),
   course_type VARCHAR(255),
   distance double,
   client_id INT,
@@ -82,6 +81,8 @@ ALTER TABLE employers
     add role_id int;
 ALTER TABLE employers
     add car_id int;
+ALTER TABLE employers
+    add course_id int;
 ALTER TABLE courses
     add employee_id int;
 ALTER TABLE courses
@@ -91,6 +92,8 @@ ALTER TABLE clients
 
 ALTER TABLE employers
     ADD CONSTRAINT FK_ROLES_ROLE_ID FOREIGN KEY (role_id) REFERENCES roles(role_id);
+ALTER TABLE employers
+    ADD CONSTRAINT FK_COURSES_COURSE_ID FOREIGN KEY (course_id) REFERENCES courses(course_id);
 ALTER TABLE employers
     ADD CONSTRAINT FK_CARS_CAR_ID FOREIGN KEY (car_id) REFERENCES cars(car_id);
 ALTER TABLE courses

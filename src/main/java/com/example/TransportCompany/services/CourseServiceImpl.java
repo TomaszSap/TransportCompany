@@ -22,7 +22,7 @@ public class CourseServiceImpl implements CourseService{
 
     @Autowired
     ClientService clientService;
-
+    @Autowired
     EmployeeService employeeService;
     @Autowired
     CourseRepository courseRepository;
@@ -76,24 +76,34 @@ public class CourseServiceImpl implements CourseService{
     public boolean updateCourse(int id , Course update) {
         boolean isUpdated=false;
         Optional<Course> courseEntity=courseRepository.findById(id);
+        update.setCourseId(id);
         Course updatedCourse;
-        if (!courseEntity.isEmpty() && courseEntity.get().getCourseId()>0)
+        if (courseEntity.isPresent() && courseEntity.get().getCourseId()>0)
         {
-            try {
+            if(update.getToWhere()!=null &&update.getToWhere()!=null&&(update.getToWhere()!=courseEntity.get().getToWhere()|| update.getFromWhere()!=courseEntity.get().getFromWhere()))
+            {try {
                 update.setDistance(openRouteService.calculateDistance(update.getFromWhere(),update.getToWhere()));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-            if (update.getClientsId().getClientId()!=courseEntity.get().getClientsId().getClientId())
+            }}
+            if (update.getClientsId()!=null && update.getClientsId().getClientId()!=courseEntity.get().getClientsId().getClientId())
             {
                 changeClient(update,courseEntity.get());
             }
-            if (update.getEmployee().getEmployeeId()!=courseEntity.get().getEmployee().getEmployeeId() || courseEntity.get().getEmployee()==null)
+            if (courseEntity.get().getEmployee()!=null&&update.getEmployee()!=null ){
+            if ((update.getEmployee().getEmployeeId()!=courseEntity.get().getEmployee().getEmployeeId()))
             {
                 changeEmployee(update,courseEntity.get());
             }
+            }
+            else if(update.getEmployee()!=null &&courseEntity.get().getEmployee()==null){
+                courseEntity.get().setEmployee(update.getEmployee());
+                assignCourse(courseEntity.get());
+
+            }
+
             BeanUtils.copyProperties(update, courseEntity.get(), getNullPropertyNames(update));
             updatedCourse=  courseRepository.save(courseEntity.get());
         }
@@ -105,18 +115,18 @@ public class CourseServiceImpl implements CourseService{
         return isUpdated;
     }
     private void changeEmployee(Course update, Course courseEntity) {
-        if (courseEntity.getEmployee()==null)
-        {
-            assignCourse(courseEntity);
-        }
-        else {
+
+
         Employee updateEmployee= courseEntity.getEmployee();
         updateEmployee.getCourses().remove(courseEntity);
-        Employee newEmployee=update.getEmployee();
-        newEmployee.getCourses().add(update);
-        employeeService.updateEmployee(courseEntity.getEmployee().getEmployeeId(),updateEmployee);
-        employeeService.updateEmployee(newEmployee.getEmployeeId(),newEmployee);
-        }
+        courseEntity.setEmployee(update.getEmployee());
+       var emp=employeeService.getEmployeeById(courseEntity.getEmployee().getEmployeeId());
+        if(emp.isPresent())
+        {
+            emp.get().getCourses().add(courseEntity);
+        employeeService.updateEmployee(updateEmployee.getEmployeeId(),updateEmployee);
+        employeeService.updateEmployee( emp.get().getEmployeeId(), emp.get());}
+
     }
 
     private  void changeClient(Course update,Course courseEntity)

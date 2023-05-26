@@ -15,32 +15,26 @@ import java.util.List;
 @SuppressWarnings("rawtypes")
 public abstract class AbstractMongoDao<T extends DaoModel> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMongoDao.class);
-    public abstract MongoTemplate getMongoTemplate();
     public abstract void setMongoTemplate(MongoTemplate mongoTemplate);
+
+
+    public abstract MongoTemplate getMongoTemplate();
     protected  T save(T object, CollectionEnum collectionName){
             final Document objectToSave = MongoUtil.convertToMongo(object);
             logger.debug("save to collection {}, values: {}", collectionName.getName());
             final Document result = getMongoTemplate().save(objectToSave, collectionName.getName());
             T resultObject = MongoUtil.convertFromMongo(result, (Class<T>) object.getClass());
-            logger.trace("save return {}");
+            logger.trace("save return {}",resultObject);
             return resultObject;
     }
     protected T findById(String id, Class<T> entityClass, CollectionEnum collectionName){
         logger.debug("findById for collection{}, id: {}", collectionName.getName(), id);
         final Document result = getMongoTemplate().findById(id, Document.class, collectionName.getName());
         T resultObject = MongoUtil.convertFromMongo(result, entityClass);
-        logger.trace("findById return {}");
+        logger.trace("findById return {}",resultObject);
         return resultObject;
     }
 
-    //toDo
-    protected T findByClientId(String id, Class<T> entityClass, CollectionEnum collectionName)
-    {
-        logger.debug("findByClientId for collection{}, id: {}", collectionName.getName(), id);
-        //final Document result = getMongoTemplate().f
-        return null;
-
-    }
     protected T findAndModify(Query query, T object, Class<T> entityClass, CollectionEnum collectionName) {
         Update update = new Update();
         ReflectionUtils.doWithFields(object.getClass(), field -> {
