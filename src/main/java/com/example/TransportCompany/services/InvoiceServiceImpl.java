@@ -87,7 +87,7 @@ public class InvoiceServiceImpl implements  InvoiceService{
     }
 
     @Override
-    public List<Invoice> getAll(Invoice invoice) {
+    public List<Invoice> getAll() {
         return invoiceMongoDao.findAllInvoices().stream().sorted(Comparator.comparing(Invoice::getDateOfService)).collect(Collectors.toList());
     }
 

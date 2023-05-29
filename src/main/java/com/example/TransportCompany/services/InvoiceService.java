@@ -12,7 +12,7 @@ public interface InvoiceService {
      boolean deleteInvoice(int id);
       Invoice findById(String invoiceId);
      boolean updateById(String invoiceId,Invoice invoice);
-     List<Invoice> getAll(Invoice invoice);
+     List<Invoice> getAll();
      Invoice print(String invoice);
 
      List<Invoice> findByClient(int clientId);
