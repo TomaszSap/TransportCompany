@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -87,7 +88,7 @@ public class InvoiceServiceImpl implements  InvoiceService{
 
     @Override
     public List<Invoice> getAll(Invoice invoice) {
-        return null;
+        return invoiceMongoDao.findAllInvoices().stream().sorted(Comparator.comparing(Invoice::getDateOfService)).collect(Collectors.toList());
     }
 
     @Override
@@ -104,7 +105,7 @@ public class InvoiceServiceImpl implements  InvoiceService{
     }
 
     @Override
-    public List<Invoice> findByClient(String clientId) {
+    public List<Invoice> findByClient(int clientId) {
         Query query=new Query();
         query.addCriteria(Criteria.where("clientId").is(clientId));
       return invoiceMongoDao.findByClientInvoices(query);

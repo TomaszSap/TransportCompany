@@ -15,6 +15,6 @@ public interface InvoiceService {
      List<Invoice> getAll(Invoice invoice);
      Invoice print(String invoice);
 
-     List<Invoice> findByClient(String clientId);
+     List<Invoice> findByClient(int clientId);
 
 }

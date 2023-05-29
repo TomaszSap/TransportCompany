@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
@@ -94,12 +95,13 @@ public class EmployeeServiceImpl implements EmployeeService{
         boolean isDeleted=false;
         Optional<Employee> employee=employeeRepository.findById(employeeId);
         if(employee.isPresent()){
-        for(Course course:employee.get().getCourses())
-        {
-            course.setEmployee(null);
-            courseRepository.save(course);
-        }
-        employee.get().setRole(null);
+          employee.get().getCourses()
+                    .stream()
+                    .peek(course -> {
+                        course.setEmployee(null);
+                        courseRepository.save(course);
+                    });
+            employee.get().setRole(null);
       employeeRepository.deleteById(employeeId);
       isDeleted=true;
        }
