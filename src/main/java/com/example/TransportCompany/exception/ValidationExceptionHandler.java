@@ -1,4 +1,4 @@
-package com.example.TransportCompany.config;
+package com.example.TransportCompany.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
