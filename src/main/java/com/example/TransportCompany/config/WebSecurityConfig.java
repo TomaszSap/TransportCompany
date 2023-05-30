@@ -16,15 +16,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();/*ignoringAntMatchers("/public/**")
+        http.csrf().disable();/*ignoringAntMatchers("/home/**")
                 .ignoringRequestMatchers(PathRequest.toH2Console()).and()
                 .authorizeRequests()
                 .mvcMatchers("/dashboard").authenticated()
                 .mvcMatchers("/accountant/**").hasRole("ACCOUNTANT")
+                .mvcMatchers("/forwarder/**").hasRole("FORWARDER")
+                .mvcMatchers("/driver/**").hasRole("DRIVER")
                 .mvcMatchers("/home").permitAll()
-                .mvcMatchers("/admin/**").permitAll()//.hasRole("ADMIN")
+                .mvcMatchers("/admin/**").permitAll().hasRole("ADMIN")
                 .mvcMatchers("/public/** ").permitAll()
-                .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .and().formLogin().loginPage("/login").defaultSuccessUrl("/dashboard")
                 .failureUrl("/login?error=true").permitAll()
                 .and().logout().logoutSuccessUrl("/login?logout=true").invalidateHttpSession(true).permitAll()

@@ -1,5 +1,6 @@
 package com.example.TransportCompany.dto;
 
+import com.example.TransportCompany.annotation.FieldsValueMatch;
 import com.example.TransportCompany.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -10,6 +11,18 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
+@FieldsValueMatch.List({
+        @FieldsValueMatch(
+                field="pwd",
+                fieldMatch = "confirmPwd",
+                message = "Passwords do not match!"
+        ),
+        @FieldsValueMatch(
+                field="email",
+                fieldMatch = "confirmEmail",
+                message = "Email addresses do not match!"
+        )
+})
 public class EmployeeDto {
     @JsonProperty("name")
     String name;

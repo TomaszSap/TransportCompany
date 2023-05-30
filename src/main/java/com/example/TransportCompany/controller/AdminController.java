@@ -15,11 +15,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
@@ -46,7 +48,8 @@ public class AdminController {
         if (errors.hasErrors())
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .header(HttpHeaders.LOCATION, "redirect:/createUser")
-                    .build();
+                    .body(errors.getAllErrors().stream().map(ObjectError::getDefaultMessage)
+                            .collect(Collectors.toList()).toString());
         boolean isSaved=false;
       if(employee!=null)
        {

@@ -2,6 +2,7 @@ package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.config.PasswordEncoderConfig;
 import com.example.TransportCompany.constant.RoleType;
+import com.example.TransportCompany.exception.ApiRequestException;
 import com.example.TransportCompany.model.Car;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
@@ -73,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         else
         {
             logger.error("Email is in usage !");
-            return isSaved;
+            throw new ApiRequestException("Email is in usage !");
         }
         if(employee!=null && employee.getEmployeeId()>0){
             isSaved=true;

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,9 +51,9 @@ public class InvoiceServiceImpl implements  InvoiceService{
     }
 
     private BigDecimal calculateValue(double distance,int vat) {
-        var x=kilometerRate.multiply(BigDecimal.valueOf(distance));
-        var vatAmount=x.multiply(BigDecimal.valueOf(vat).divide(BigDecimal.valueOf(10)));
-        return  x.multiply(vatAmount);
+        var x=kilometerRate.multiply(BigDecimal.valueOf(distance)).setScale(2);
+        var vatAmount=x.multiply(BigDecimal.valueOf(vat).divide(BigDecimal.valueOf(100))).setScale(2);
+        return  x.add(vatAmount).setScale(2);
     }
 
     private void setDate(Invoice invoice)

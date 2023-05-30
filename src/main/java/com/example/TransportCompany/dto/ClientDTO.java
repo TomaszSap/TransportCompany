@@ -1,5 +1,6 @@
 package com.example.TransportCompany.dto;
 
+import com.example.TransportCompany.annotation.FieldsValueMatch;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -8,6 +9,13 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
+@FieldsValueMatch.List({
+        @FieldsValueMatch(
+                field="email",
+                fieldMatch = "confirmEmail",
+                message = "Email addresses do not match!"
+        )
+})
 public class ClientDTO {
     @NotBlank(message = "Name must be not blank")
     @Size(min=2 , max=100, message = "Name should be min 2 symbols and less than 100")

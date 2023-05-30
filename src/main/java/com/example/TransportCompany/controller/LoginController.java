@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
+@RequestMapping("/home")
+
 public class LoginController {
     @RequestMapping(value = "/login",method = {RequestMethod.GET,RequestMethod.POST})
     public String displayLoginPage(@RequestParam(value = "error",required = false) String error,
