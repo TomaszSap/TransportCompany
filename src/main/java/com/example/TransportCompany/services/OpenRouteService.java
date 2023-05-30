@@ -16,10 +16,11 @@ import java.util.Scanner;
 public class OpenRouteService {
     @Value("${open_route_key}")
     private String API_KEY;
+
     private Optional<JSONArray> getCoordinates(String city) throws JSONException {
         JSONArray coordinates = null;
         try {
-            URL url = new URL("https://api.openrouteservice.org/geocode/search?api_key="+API_KEY+"&text=" + city);
+            URL url = new URL("https://api.openrouteservice.org/geocode/search?api_key=" + API_KEY + "&text=" + city);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -47,22 +48,21 @@ public class OpenRouteService {
         return Optional.of(coordinates);
     }
 
-    public  long calculateDistance(String startCity, String destinationCity) throws JSONException, IOException {
-        var startCityCoords=  getCoordinates(startCity);
-        var destinationCityCoords=  getCoordinates(destinationCity);
+    public long calculateDistance(String startCity, String destinationCity) throws JSONException, IOException {
+        var startCityCoords = getCoordinates(startCity);
+        var destinationCityCoords = getCoordinates(destinationCity);
         long distance = 0;
         double longitudeStartCity;
         double latitudeStartCity;
         double longitudeDestinationCity;
         double latitudeDestinationCity;
-        if (startCityCoords.isPresent()&& destinationCityCoords.isPresent())
-        {
-            longitudeStartCity=startCityCoords.get().getDouble(0);
-            latitudeStartCity=startCityCoords.get().getDouble(1);
-            longitudeDestinationCity=destinationCityCoords.get().getDouble(0);
-            latitudeDestinationCity=destinationCityCoords.get().getDouble(1);
+        if (startCityCoords.isPresent() && destinationCityCoords.isPresent()) {
+            longitudeStartCity = startCityCoords.get().getDouble(0);
+            latitudeStartCity = startCityCoords.get().getDouble(1);
+            longitudeDestinationCity = destinationCityCoords.get().getDouble(0);
+            latitudeDestinationCity = destinationCityCoords.get().getDouble(1);
             String urlString = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=" + API_KEY
-                    + "&start=" + longitudeStartCity+","+latitudeStartCity+ "&end=" + longitudeDestinationCity+","+latitudeDestinationCity;
+                    + "&start=" + longitudeStartCity + "," + latitudeStartCity + "&end=" + longitudeDestinationCity + "," + latitudeDestinationCity;
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");

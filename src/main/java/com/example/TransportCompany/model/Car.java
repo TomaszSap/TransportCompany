@@ -13,19 +13,19 @@ public class Car extends BaseEntity {
     @Column(name = "car_id")
     private int carId;
     @NotBlank(message = "Brand must not be blank")
-    @Size(min = 2,message = "Brand must be at least 2 characters long")
-    private  String brand;
+    @Size(min = 2, message = "Brand must be at least 2 characters long")
+    private String brand;
     @NotBlank(message = "Model must not be blank")
-    @Size(min = 2,message = "Model must be at least 2 characters long")
+    @Size(min = 2, message = "Model must be at least 2 characters long")
     private String model;
 
     @NotBlank(message = "Registration  must not be blank")
-    @Size(min = 3,message = "Registration must be at least 2 characters long")
+    @Size(min = 3, message = "Registration must be at least 2 characters long")
     private String registration;
     private boolean isAssigned;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "employee_Id",referencedColumnName = "employee_Id",nullable = true)
+    @JoinColumn(name = "employee_Id", referencedColumnName = "employee_Id", nullable = true)
     private Employee employee;
 
 
@@ -53,13 +53,16 @@ public class Car extends BaseEntity {
         isAssigned = assigned;
     }
 
-    public Car(){}
+    public Car() {
+    }
+
     public Car(int id, String brand, String model, String registration) {
         this.carId = id;
         this.brand = brand;
         this.model = model;
         this.registration = registration;
     }
+
     public int getId() {
         return carId;
     }

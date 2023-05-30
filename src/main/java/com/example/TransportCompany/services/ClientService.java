@@ -8,9 +8,12 @@ import java.util.Optional;
 
 @Service
 public interface ClientService {
-      boolean addClient(Client client);
-      boolean deleteClient(int clientId);
+    boolean addClient(Client client);
+
+    boolean deleteClient(int clientId);
+
     Object updateClient(int clientId, Client client);
+
     List<Client> getAllClients();
 
     Optional<Client> getClient(int clientId);

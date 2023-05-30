@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PrintInvoice extends Invoice{
+public class PrintInvoice extends Invoice {
     private Client client;
     private Course course;
     private Company company;

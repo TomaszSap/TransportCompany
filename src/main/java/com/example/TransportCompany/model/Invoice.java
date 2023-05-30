@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -26,8 +25,8 @@ public class Invoice extends DaoModel {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
-    @GenericGenerator(name = "native",strategy = "native")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
     @JsonIgnore
     private String objectId;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -51,6 +50,6 @@ public class Invoice extends DaoModel {
     @JsonProperty("vat")
     private String vat;
     @NotBlank
-            @JsonProperty("companyId")
+    @JsonProperty("companyId")
     String companyId;
 }

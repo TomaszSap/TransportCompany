@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Entity(name = "roles")
 public class Role extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
-    @GenericGenerator(name = "native",strategy = "native")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
     @Column(name = "role_id")
     private int roleId;
     @JsonProperty("roleName")

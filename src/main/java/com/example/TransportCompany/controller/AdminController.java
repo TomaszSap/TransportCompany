@@ -50,7 +50,7 @@ public class AdminController {
                     .header(HttpHeaders.LOCATION, "redirect:/createUser")
                     .body(errors.getAllErrors().stream().map(ObjectError::getDefaultMessage)
                             .collect(Collectors.toList()).toString());
-        boolean isSaved=false;
+        boolean isSaved = false;
       if(employee!=null)
        {
             isSaved=employeeService.addEmployee(employee);

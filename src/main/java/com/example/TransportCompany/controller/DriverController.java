@@ -15,24 +15,23 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("driver")
-public class DriverController  {
-  private static final Logger logger= LoggerFactory.getLogger(DriverController.class);
+public class DriverController {
+    private static final Logger logger = LoggerFactory.getLogger(DriverController.class);
 
     @Autowired
     EmployeeService employeeService;
 
     @GetMapping("/getAllCourses")
-    public ResponseEntity<Set> getAllCourses(@RequestParam int id)
-    {
+    public ResponseEntity<Set> getAllCourses(@RequestParam int id) {
         logger.debug("Called GET on endpoint /getCourses/");
 
-        return  ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
     }
-  @GetMapping("/getCourse")
-  public ResponseEntity<Set> getCourse(@RequestParam int id,@RequestParam int courseId)
-  {
-    logger.debug("Called GET on endpoint /getCourse/");
 
-    return  ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
-  }
+    @GetMapping("/getCourse")
+    public ResponseEntity<Set> getCourse(@RequestParam int id, @RequestParam int courseId) {
+        logger.debug("Called GET on endpoint /getCourse/");
+
+        return ResponseEntity.status(HttpStatus.OK).body(employeeService.getCoursesById(id));
+    }
 }

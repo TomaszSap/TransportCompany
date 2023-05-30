@@ -8,13 +8,18 @@ import java.util.List;
 
 @Service
 public interface InvoiceService {
-     Invoice addInvoice(Invoice invoice,int clientId);
-     boolean deleteInvoice(int id);
-      Invoice findById(String invoiceId);
-     boolean updateById(String invoiceId,Invoice invoice);
-     List<Invoice> getAll();
-     Invoice print(String invoice);
+    Invoice addInvoice(Invoice invoice, int clientId);
 
-     List<Invoice> findByClient(int clientId);
+    boolean deleteInvoice(int id);
+
+    Invoice findById(String invoiceId);
+
+    boolean updateById(String invoiceId, Invoice invoice);
+
+    List<Invoice> getAll();
+
+    Invoice print(String invoice);
+
+    List<Invoice> findByClient(int clientId);
 
 }

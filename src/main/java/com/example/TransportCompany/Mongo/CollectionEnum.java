@@ -3,13 +3,13 @@ package com.example.TransportCompany.Mongo;
 public enum CollectionEnum {
     INVOICES("invoice");
 
-    private String name;
+    private final String name;
 
-    CollectionEnum(String invoice) {
-        this.name=name;
+    CollectionEnum(String name) {
+        this.name = name;
     }
-    public String getName()
-    {
+
+    public String getName() {
         return name;
     }
 }

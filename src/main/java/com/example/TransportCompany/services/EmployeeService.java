@@ -11,18 +11,26 @@ import java.util.Set;
 public interface EmployeeService {
 
 
-     void deleteCourseFromTable(Employee employee,int id);
-     boolean addEmployee(Employee employee);
+    void deleteCourseFromTable(Employee employee, int id);
 
-     boolean deleteEmployee(int employeeId);
-     void assignCar(int employeeId,int carId) throws Exception;
-     boolean unassignCar(int employeeId,int carId);
-     List<Employee> getAllEmployers();
-      boolean updateEmployee(Employee employee);
-      boolean updateEmployee(int employeeId,Employee employee);
-     Optional<Employee> getEmployeeById(int employeeId);
-     List<Employee> getEmployeersByRole(RoleType roleType);
+    boolean addEmployee(Employee employee);
 
-     Set<Course> getCoursesById(int id);
+    boolean deleteEmployee(int employeeId);
+
+    void assignCar(int employeeId, int carId) throws Exception;
+
+    boolean unassignCar(int employeeId, int carId);
+
+    List<Employee> getAllEmployers();
+
+    boolean updateEmployee(Employee employee);
+
+    boolean updateEmployee(int employeeId, Employee employee);
+
+    Optional<Employee> getEmployeeById(int employeeId);
+
+    List<Employee> getEmployeersByRole(RoleType roleType);
+
+    Set<Course> getCoursesById(int id);
 
 }

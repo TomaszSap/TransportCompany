@@ -13,10 +13,11 @@ public class RestEndpoint {
 
     @Autowired
     EmployeeService employeeService;
+
     @PatchMapping("/user")
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> updateUser(@RequestParam int id, @RequestBody Employee employee)
-    {   Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
+    public ResponseEntity<String> updateUser(@RequestParam int id, @RequestBody Employee employee) {
+        Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
         if (existingEmployee.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {

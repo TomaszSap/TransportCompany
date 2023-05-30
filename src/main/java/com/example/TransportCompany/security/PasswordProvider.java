@@ -1,6 +1,5 @@
 package com.example.TransportCompany.security;
 
-import com.example.TransportCompany.Mongo.AbstractMongoDao;
 import com.example.TransportCompany.config.PasswordEncoderConfig;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.model.Role;
@@ -25,21 +24,21 @@ public class PasswordProvider implements AuthenticationProvider {
     private EmployeeRepository employeeRepository;
     @Autowired
     private PasswordEncoderConfig passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email= authentication.getName();
-        String pwd=authentication.getCredentials().toString();
-        Employee employee=employeeRepository.findByEmail(email);
-        if(employee!=null && employee.getEmployeeId()>0 && passwordEncoder.matches(pwd,employee.getPwd()))
-        {
-            return new UsernamePasswordAuthenticationToken(email,null,getGrantedAuthorities(employee.getRole()));
-        }else
+        String email = authentication.getName();
+        String pwd = authentication.getCredentials().toString();
+        Employee employee = employeeRepository.findByEmail(email);
+        if (employee != null && employee.getEmployeeId() > 0 && passwordEncoder.matches(pwd, employee.getPwd())) {
+            return new UsernamePasswordAuthenticationToken(email, null, getGrantedAuthorities(employee.getRole()));
+        } else
             throw new BadCredentialsException("Invalid credentials!");
     }
 
     private Collection<? extends GrantedAuthority> getGrantedAuthorities(Role role) {
-        List<GrantedAuthority> grantedAuthorities=new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleName()));
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
         return grantedAuthorities;
     }
 
