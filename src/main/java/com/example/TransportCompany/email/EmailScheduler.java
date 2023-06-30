@@ -18,7 +18,7 @@ public class EmailScheduler {
     @Autowired
     private EmailSender emailSender;
 
-    @Scheduled(cron = "0 0 15 * * ?")
+    @Scheduled(cron ="${email_scheluder_cron}")
     public void sendEmailsAfterOneWeek() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, -1);
