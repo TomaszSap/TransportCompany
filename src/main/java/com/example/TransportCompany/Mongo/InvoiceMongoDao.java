@@ -53,7 +53,7 @@ public class InvoiceMongoDao extends AbstractMongoDao {
         return findAll(invoice.getClass(), collection);
     }
 
-    public List<Invoice> findByClientInvoices(Query query) {
+    public List<Invoice> findByInvoices(Query query) {
         return findMany(query, invoice.getClass(), collection);
     }
 

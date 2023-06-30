@@ -32,9 +32,11 @@ import java.util.stream.Collectors;
     @Override
     public Invoice addInvoice(Invoice invoice, int courseId) {
         Course courseEntity = courseService.findCourse(courseId);
-            if (Objects.equals(courseEntity.getType().getName(), "CLOSED")) {
+       Optional<Client> clientEntity=clientService.getClient(courseEntity.getClientsId().getClientId());
+            if (Objects.equals(courseEntity.getType().getName(), "CLOSED")&& clientEntity.isPresent()) {
                 invoice.setCourseId(courseEntity.getCourseId());
                 invoice.setClientId(String.valueOf(courseEntity.getClientsId().getClientId()));
+                invoice.setClientEmail(String.valueOf(clientEntity.get().getEmail()));
                 invoice.setDateOfService(courseEntity.getUpdatedAt());
                 setDate(invoice);
                 invoice.setTotalAmount(calculateValue(courseEntity.getDistance(), Integer.parseInt(invoice.getVat())));
@@ -104,6 +106,13 @@ import java.util.stream.Collectors;
     public List<Invoice> findByClient(int clientId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("clientId").is(clientId));
-        return invoiceMongoDao.findByClientInvoices(query);
+        return invoiceMongoDao.findByInvoices(query);
+    }
+
+    @Override
+    public List<Invoice> findByUnpaid (Date unpaidDate) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("clientId").is(unpaidDate));
+        return invoiceMongoDao.findByInvoices(query);
     }
 }

@@ -38,14 +38,13 @@ public class Invoice extends DaoModel {
     private Date dateOfPayment;
     @NotBlank
     @JsonProperty("service")
-
     private String service;
     @NotBlank
     @JsonProperty("clientId")
-
     private String clientId;
     private BigDecimal totalAmount;
     private int courseId;
+    private String clientEmail;
     @NotBlank
     @JsonProperty("vat")
     private String vat;
