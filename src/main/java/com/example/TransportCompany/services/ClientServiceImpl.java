@@ -1,6 +1,8 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.Mongo.InvoiceMongoDao;
+import com.example.TransportCompany.dto.ClientForwarderDTO;
+import com.example.TransportCompany.mapper.ClientForwarderDTOMapper;
 import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.repository.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -10,18 +12,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
 
 @Slf4j
 @Service
-public class ClientServiceImpl implements ClientService {
+ class ClientServiceImpl implements ClientService {
     @Autowired
     ClientRepository clientRepository;
     @Autowired
     InvoiceMongoDao invoiceMongoDao;
-
+    @Autowired
+    ClientForwarderDTOMapper clientForwarderDTOMapper;
     @Override
     public boolean addClient(Client client) {
         boolean isSaved = false;
@@ -66,8 +70,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+    public List<ClientForwarderDTO> getAllClients() {
+
+        return clientRepository.findAll().stream().map(clientForwarderDTOMapper).collect(Collectors.toList());
     }
 
     @Override

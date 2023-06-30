@@ -2,7 +2,9 @@ package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.config.PasswordEncoderConfig;
 import com.example.TransportCompany.constant.RoleType;
+import com.example.TransportCompany.dto.EmployeeDto;
 import com.example.TransportCompany.exception.ApiRequestException;
+import com.example.TransportCompany.mapper.EmployeeDTOMapper;
 import com.example.TransportCompany.model.Car;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
@@ -20,22 +22,34 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+ class EmployeeServiceImpl implements EmployeeService {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
-    @Autowired
     private PasswordEncoderConfig passwordEncoder;
-    @Autowired
     EmployeeRepository employeeRepository;
-    @Autowired
     CarService carService;
-    @Autowired
     CourseRepository courseRepository;
-    @Autowired
     RoleRepository roleRepository;
+    EmployeeDTOMapper employeeDTOMapper;
+
+    @Autowired
+    public EmployeeServiceImpl(PasswordEncoderConfig passwordEncoder,
+                               EmployeeRepository employeeRepository,
+                               CarService carService,
+                               CourseRepository courseRepository,
+                               RoleRepository roleRepository,
+                               EmployeeDTOMapper employeeDTOMapper) {
+        this.passwordEncoder = passwordEncoder;
+        this.employeeRepository = employeeRepository;
+        this.carService = carService;
+        this.courseRepository = courseRepository;
+        this.roleRepository = roleRepository;
+        this.employeeDTOMapper = employeeDTOMapper;
+    }
 
     @Override
     public void deleteCourseFromTable(Employee employee, int id) {
@@ -188,8 +202,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> getEmployeersByRole(RoleType roleType) {
-        return employeeRepository.findByRole(roleType.getName());
+    public List<EmployeeDto> getEmployeersByRole(RoleType roleType) {
+        return employeeRepository.findByRole(roleType.getName()).stream().map(employeeDTOMapper).collect(Collectors.toList());
     }
 
     @Override

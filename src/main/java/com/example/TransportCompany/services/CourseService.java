@@ -1,23 +1,20 @@
 package com.example.TransportCompany.services;
 
+import com.example.TransportCompany.dto.CourseDTO;
 import com.example.TransportCompany.model.Course;
-import org.json.JSONException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CourseService {
-    void saveCourse(Course course) throws JSONException;
+    boolean saveCourse(Course course);
 
-    List<Course> findAllCourses();
+    List<CourseDTO> findAllCourses();
 
-    List<Course> findCoursesWithType(String courseType);
+    List<CourseDTO> findCoursesWithType(String courseType);
 
     boolean updateCourse(int id, Course update);
 
-    void updateCourse(Course update);
-
     boolean deleteCourse(int id);
-
-    Optional<Course> findCourse(int id);
+    Course findCourse(int id);
+    CourseDTO findCourseDto(int id);
 }

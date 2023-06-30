@@ -14,7 +14,7 @@ import java.util.Optional;
 import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
 @Service
-public class CarServiceImpl implements CarService {
+ class CarServiceImpl implements CarService {
     CarRepository carRepository;
 
     EmployeeRepository employeeRepository;

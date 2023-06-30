@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class OpenRouteService {
+ class OpenRouteService {
     @Value("${open_route_key}")
     private String API_KEY;
 

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class InvoiceServiceImpl implements InvoiceService {
+ class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     CourseService courseService;
     @Autowired
@@ -31,21 +31,18 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice addInvoice(Invoice invoice, int courseId) {
-        Optional<Course> courseEntity = courseService.findCourse(courseId);
-        if (courseEntity.isPresent()) {
-            if (Objects.equals(courseEntity.get().getType().getName(), "CLOSED")) {
-                invoice.setCourseId(courseEntity.get().getCourseId());
-                invoice.setClientId(String.valueOf(courseEntity.get().getClientsId().getClientId()));
-                invoice.setDateOfService(courseEntity.get().getUpdatedAt());
+        Course courseEntity = courseService.findCourse(courseId);
+            if (Objects.equals(courseEntity.getType().getName(), "CLOSED")) {
+                invoice.setCourseId(courseEntity.getCourseId());
+                invoice.setClientId(String.valueOf(courseEntity.getClientsId().getClientId()));
+                invoice.setDateOfService(courseEntity.getUpdatedAt());
                 setDate(invoice);
-                invoice.setTotalAmount(calculateValue(courseEntity.get().getDistance(), Integer.parseInt(invoice.getVat())));
+                invoice.setTotalAmount(calculateValue(courseEntity.getDistance(), Integer.parseInt(invoice.getVat())));
                 return invoiceMongoDao.saveToMongo(invoice);
             } else {
-                throw new IllegalArgumentException("The course is not closed: " + courseEntity.get().getCourseId());
+                throw new IllegalArgumentException("The course is not closed: " + courseEntity.getCourseId());
             }
-        } else {
-            throw new IllegalArgumentException("The course is not exists: " + courseEntity.get().getCourseId());
-        }
+
     }
 
     private BigDecimal calculateValue(double distance, int vat) {
@@ -94,12 +91,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Invoice print(String invoiceId) {
         Invoice invoice = findById(invoiceId);
         Optional<Client> client = clientService.getClient(Integer.parseInt(invoice.getClientId()));
-        Optional<Course> course = courseService.findCourse(invoice.getCourseId());
+        Course course = courseService.findCourse(invoice.getCourseId());
         Optional<Company> company = companyRepository.findById(Integer.valueOf(invoice.getCompanyId()));
         PrintInvoice printInvoice = (PrintInvoice) invoice;
         printInvoice.setClient(client.get());
         printInvoice.setCompany(company.get());
-        printInvoice.setCourse(course.get());
+        printInvoice.setCourse(course);
         return printInvoice;
     }
 

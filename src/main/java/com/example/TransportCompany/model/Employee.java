@@ -1,5 +1,6 @@
 package com.example.TransportCompany.model;
 
+import com.example.TransportCompany.annotation.FieldsValueMatch;
 import com.example.TransportCompany.sql.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +20,18 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "employers")
+@FieldsValueMatch.List({
+        @FieldsValueMatch(
+                field="pwd",
+                fieldMatch = "confirmPwd",
+                message = "Passwords do not match!"
+        ),
+        @FieldsValueMatch(
+                field="email",
+                fieldMatch = "confirmEmail",
+                message = "Email addresses do not match!"
+        )
+})
 public class Employee extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")

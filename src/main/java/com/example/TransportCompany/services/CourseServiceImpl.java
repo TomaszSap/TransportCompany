@@ -1,24 +1,26 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.constant.CourseType;
+import com.example.TransportCompany.dto.CourseDTO;
+import com.example.TransportCompany.exception.ApiRequestException;
+import com.example.TransportCompany.mapper.CourseDTOMapper;
 import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.repository.CourseRepository;
 import lombok.SneakyThrows;
-import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.TransportCompany.constant.AppConstants.getNullPropertyNames;
 
 @Service
-public class CourseServiceImpl implements CourseService {
+ class CourseServiceImpl implements CourseService {
 
     @Autowired
     ClientService clientService;
@@ -28,10 +30,12 @@ public class CourseServiceImpl implements CourseService {
     CourseRepository courseRepository;
     @Autowired
     OpenRouteService openRouteService;
+    @Autowired
+    CourseDTOMapper courseDTOMapper;
 
     @SneakyThrows
     @Override
-    public void saveCourse(Course course) {
+    public boolean saveCourse(Course course) {
         if (course.getType() == null)
             course.setType(CourseType.OPEN);
         boolean isSaved = false;
@@ -47,19 +51,20 @@ public class CourseServiceImpl implements CourseService {
             if (course1 != null && course1.getCourseId() > 0)
                 isSaved = true;
         }
+        return isSaved;
     }
 
     @Override
-    public List<Course> findCoursesWithType(String courseType) {
+    public List<CourseDTO> findCoursesWithType(String courseType) {
         if (CourseType.isValid(courseType)) ;
-        List<Course> courseList = courseRepository.findByType(CourseType.valueOf(courseType));
-        return courseList;
+        return courseRepository.findByType(CourseType.valueOf(courseType)).stream().map(courseDTOMapper).collect(Collectors.toList());
+
     }
 
     @Override
-    public List<Course> findAllCourses() {
-        List<Course> courseList = courseRepository.findAll();
-        return courseList;
+    public List<CourseDTO> findAllCourses() {
+        return courseRepository.findAll().stream().map(courseDTOMapper).collect(Collectors.toList());
+
     }
 
     private void assignCourse(Course update) {
@@ -79,13 +84,7 @@ public class CourseServiceImpl implements CourseService {
         Course updatedCourse;
         if (courseEntity.isPresent() && courseEntity.get().getCourseId() > 0) {
             if (update.getToWhere() != null && update.getToWhere() != null && (!update.getToWhere().equals(courseEntity.get().getToWhere()) || !update.getFromWhere().equals(courseEntity.get().getFromWhere()))) {
-                try {
-                    update.setDistance(openRouteService.calculateDistance(update.getFromWhere(), update.getToWhere()));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                update.setDistance(openRouteService.calculateDistance(update.getFromWhere(), update.getToWhere()));
             }
             if (update.getClientsId() != null && update.getClientsId().getClientId() != courseEntity.get().getClientsId().getClientId()) {
                 changeClient(update, courseEntity.get());
@@ -135,21 +134,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void updateCourse(Course update) {
-        Optional<Course> courseEntity = courseRepository.findById(update.getCourseId());
-        if (courseEntity.isPresent()) {
-            courseRepository.save(update);
-        } else {
-            throw new IllegalArgumentException("Error during update entity:");
-        }
-    }
-
-    @Override
     public boolean deleteCourse(int id) {
         Optional<Course> course = courseRepository.findById(id);
         try {
             if (course.isPresent())
-                if (course.get().getEmployee() != null) {
+            {  if (course.get().getEmployee() != null) {
                     Optional<Employee> employeeEntity = employeeService.getEmployeeById(course.get().getEmployee().getEmployeeId());
                     if (employeeEntity.isPresent() && employeeEntity.get().getCourses().contains(course.get())) {
                         employeeService.deleteCourseFromTable(employeeEntity.get(), course.get().getCourseId());
@@ -157,6 +146,7 @@ public class CourseServiceImpl implements CourseService {
                 }
             courseRepository.delete(course.get());
             return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,9 +154,20 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> findCourse(int id) {
-        return Optional.of(courseRepository.findById(id).get());
+    public Course findCourse(int id) {
+        return courseRepository.findById(id).orElseThrow(()->new ApiRequestException("Course doesn't exists!"));
     }
-
+    @Override
+    public CourseDTO findCourseDto(int id) {
+        CourseDTO courseDTO;
+        var course=courseRepository.findById(id);
+        if (course.isPresent()) {
+            courseDTO= courseDTOMapper.apply(course.get());
+        }
+        else {
+            throw new ApiRequestException("Given course doesn't exists");
+        }
+        return courseDTO;
+    }
 
 }

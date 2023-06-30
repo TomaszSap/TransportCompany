@@ -1,6 +1,7 @@
 package com.example.TransportCompany.services;
 
 import com.example.TransportCompany.constant.RoleType;
+import com.example.TransportCompany.dto.EmployeeDto;
 import com.example.TransportCompany.model.Course;
 import com.example.TransportCompany.model.Employee;
 
@@ -29,7 +30,7 @@ public interface EmployeeService {
 
     Optional<Employee> getEmployeeById(int employeeId);
 
-    List<Employee> getEmployeersByRole(RoleType roleType);
+    List<EmployeeDto> getEmployeersByRole(RoleType roleType);
 
     Set<Course> getCoursesById(int id);
 

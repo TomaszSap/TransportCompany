@@ -1,5 +1,6 @@
 package com.example.TransportCompany.services;
 
+import com.example.TransportCompany.dto.ClientForwarderDTO;
 import com.example.TransportCompany.model.Client;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public interface ClientService {
 
     Object updateClient(int clientId, Client client);
 
-    List<Client> getAllClients();
+    List<ClientForwarderDTO> getAllClients();
 
     Optional<Client> getClient(int clientId);
 }

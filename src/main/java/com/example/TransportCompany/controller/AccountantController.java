@@ -1,6 +1,6 @@
 package com.example.TransportCompany.controller;
 
-import com.example.TransportCompany.dto.ClientDTO;
+import com.example.TransportCompany.dto.ClientForwarderDTO;
 import com.example.TransportCompany.model.Client;
 import com.example.TransportCompany.model.Invoice;
 import com.example.TransportCompany.model.Response;
@@ -46,7 +46,7 @@ public class AccountantController {
     }
 
     @PostMapping(value = "/addClient")
-    public ResponseEntity<Response> addClient(@Valid @RequestBody ClientDTO clientDTO, Errors errors) {
+    public ResponseEntity<Response> addClient(@Valid @RequestBody ClientForwarderDTO clientDTO, Errors errors) {
         Client client = modelMapper.map(clientDTO, Client.class);
         if (errors.hasErrors()) {
             logger.error("Client from validation failed due to: " + errors);
@@ -95,7 +95,7 @@ public class AccountantController {
 
     @PostMapping(value = "/updateClient")
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> updateClient(@RequestParam int clientId, @RequestBody ClientDTO clientDTO) {
+    public ResponseEntity<Object> updateClient(@RequestParam int clientId, @RequestBody ClientForwarderDTO clientDTO) {
         Client client = modelMapper.map(clientDTO, Client.class);
 
         Optional<Object> iSaved = Optional.ofNullable(clientService.updateClient(clientId, client));

@@ -2,11 +2,10 @@ package com.example.TransportCompany.controller;
 
 import com.example.TransportCompany.constant.RoleType;
 import com.example.TransportCompany.dto.CourseDTO;
+import com.example.TransportCompany.dto.EmployeeDto;
 import com.example.TransportCompany.model.Course;
-import com.example.TransportCompany.model.Employee;
 import com.example.TransportCompany.services.CourseService;
 import com.example.TransportCompany.services.EmployeeService;
-import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,40 +52,33 @@ public class ForwarderController {
             logger.error("Course from validation failed due to: " + errors);
             throw new ValidationException(String.valueOf(errors));
         }
-        boolean isCreated;
-        try {
-            courseService.saveCourse(course);
-            isCreated = true;
-        } catch (JSONException e) {
-            throw new IllegalArgumentException(e);
-        }
-        return ResponseEntity.ok(isCreated).status(HttpStatus.CREATED)
+        return ResponseEntity.ok(courseService.saveCourse(course)).status(HttpStatus.CREATED)
                 .header(HttpHeaders.LOCATION, "redirect:/getOpenCourses")
                 .build();
     }
 
     @DeleteMapping("/deleteCourse")
-    public ResponseEntity deleteCourse(@RequestParam int courseId) {
+    public ResponseEntity<?> deleteCourse(@RequestParam int courseId) {
         return ResponseEntity.ok().body(courseService.deleteCourse(courseId));
     }
 
     @GetMapping("/getCourse")
-    public ResponseEntity getCourse(@RequestParam int courseId) {
-        return ResponseEntity.ok().body(courseService.findCourse(courseId));
+    public ResponseEntity<CourseDTO> getCourse(@RequestParam int courseId) {
+        return ResponseEntity.ok().body(courseService.findCourseDto(courseId));
     }
 
-    @GetMapping("/getCourses")
-    public ResponseEntity<List<Course>> showCourses(@RequestParam String type) {
+    @GetMapping("/getCoursesByType")
+    public ResponseEntity<List<CourseDTO>> showCourses(@RequestParam String type) {
         return ResponseEntity.ok().body(courseService.findCoursesWithType(type));
     }
 
     @GetMapping("/getAllDrivers")
-    public ResponseEntity<List<Employee>> getAllDrivers() {
+    public ResponseEntity<List<EmployeeDto>> getAllDrivers() {
         return ResponseEntity.ok().body(employeeService.getEmployeersByRole(RoleType.DRIVER));
     }
 
     @GetMapping("/getAllCourses")
-    public ResponseEntity<List<Course>> getAllCourses() {
+    public ResponseEntity<List<CourseDTO>> getAllCourses() {
         return ResponseEntity.ok().body(courseService.findAllCourses());
     }
 }
