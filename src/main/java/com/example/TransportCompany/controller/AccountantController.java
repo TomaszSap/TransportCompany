@@ -76,7 +76,11 @@ public class AccountantController {
         return ResponseEntity.ok().body(invoiceService.getAll());
 
     }
+    @GetMapping(value = "/getInvoice")
+    public ResponseEntity<Object> getInvoice(@RequestParam int invoiceId) {
+        return ResponseEntity.ok().body(invoiceService.findById(String.valueOf(invoiceId)));
 
+    }
     @GetMapping(value = "/findInvoicesByClient")
     public ResponseEntity<Object> findInvoicesByClient(@RequestParam int clientId) {
         return ResponseEntity.ok().body(invoiceService.findByClient(clientId));

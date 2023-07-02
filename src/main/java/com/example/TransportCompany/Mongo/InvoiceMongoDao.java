@@ -34,7 +34,7 @@ public class InvoiceMongoDao extends AbstractMongoDao {
 
     public Invoice findInvoiceById(String invoiceId) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("objectId").is(invoiceId));
+        query.addCriteria(Criteria.where("invoiceId").is(invoiceId));
         return (Invoice) findById(invoiceId,Invoice.class, collection);
     }
 
