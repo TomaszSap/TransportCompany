@@ -10,41 +10,54 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
- class InvoiceServiceImpl implements InvoiceService {
-    @Autowired
+class InvoiceServiceImpl implements InvoiceService {
     CourseService courseService;
-    @Autowired
     ClientService clientService;
-    @Autowired
 
     CompanyRepository companyRepository;
-    @Autowired
     InvoiceMongoDao invoiceMongoDao;
     private final Calendar calendar = Calendar.getInstance();
     @Value("${per_km_rate}")
     private BigDecimal kilometerRate;
 
+    @Autowired
+    public InvoiceServiceImpl(CourseService courseService, ClientService clientService, CompanyRepository companyRepository, InvoiceMongoDao invoiceMongoDao) {
+        this.courseService = courseService;
+        this.clientService = clientService;
+        this.companyRepository = companyRepository;
+        this.invoiceMongoDao = invoiceMongoDao;
+    }
+
     @Override
     public Invoice addInvoice(Invoice invoice, int courseId) {
         Course courseEntity = courseService.findCourse(courseId);
-       Optional<Client> clientEntity=clientService.getClient(courseEntity.getClientsId().getClientId());
-            if (Objects.equals(courseEntity.getType().getName(), "CLOSED")&& clientEntity.isPresent()) {
-                invoice.setCourseId(courseEntity.getCourseId());
-                invoice.setClientId(String.valueOf(courseEntity.getClientsId().getClientId()));
-                invoice.setClientEmail(String.valueOf(clientEntity.get().getEmail()));
-                invoice.setDateOfService(courseEntity.getUpdatedAt());
-                setDate(invoice);
-                invoice.setTotalAmount(calculateValue(courseEntity.getDistance(), Integer.parseInt(invoice.getVat())));
-                return invoiceMongoDao.saveToMongo(invoice);
-            } else {
-                throw new IllegalArgumentException("The course is not closed: " + courseEntity.getCourseId());
-            }
+        Optional<Client> clientEntity = clientService.getClient(courseEntity.getClientsId().getClientId());
+        if (Objects.equals(courseEntity.getType().getName(), "CLOSED") && clientEntity.isPresent()) {
+            invoice = setInvoice(invoice, clientEntity.get(), courseEntity);
+            return invoiceMongoDao.saveToMongo(invoice);
+        } else {
+            throw new IllegalArgumentException("The course is not closed: " + courseEntity.getCourseId());
+        }
 
+    }
+
+    private Invoice setInvoice(Invoice invoice, Client client, Course course) {
+        invoice.setCourseId(course.getCourseId());
+        invoice.setClientId(String.valueOf(course.getClientsId().getClientId()));
+        invoice.setClientEmail(String.valueOf(client.getEmail()));
+        invoice.setDateOfService(course.getUpdatedAt());
+        setDate(invoice);
+        invoice.setInvoiceId(setInvoiceId(invoice.getDateOfService()
+                , client.getNIP()));
+        invoice.setTotalAmount(calculateValue(course.getDistance(), Integer.parseInt(invoice.getVat())));
+        return invoice;
     }
 
     private BigDecimal calculateValue(double distance, int vat) {
@@ -65,6 +78,13 @@ import java.util.stream.Collectors;
         return calendar.getTime();
     }
 
+    private String setInvoiceId(LocalDateTime dateOfService, String nip) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        String formattedDate = dateOfService.format(formatter);
+        return "FV" + formattedDate + "-" + nip;
+    }
+
     @Override
     public boolean deleteInvoice(int id) {
         Query query = new Query();
@@ -80,8 +100,10 @@ import java.util.stream.Collectors;
     @Override
     //toDo
     public boolean updateById(String invoiceId, Invoice invoice) {
+        var isUpdated = invoiceMongoDao.findInvoiceAndModifyById(invoiceId, invoice);
+        if (isUpdated != null)
+            return true;
         return false;
-        // invoiceMongoDao.updateInvoiceById();
     }
 
     @Override
@@ -110,9 +132,10 @@ import java.util.stream.Collectors;
     }
 
     @Override
-    public List<Invoice> findByUnpaid (Date unpaidDate) {
+    public List<Invoice> findByUnpaid(Date unpaidDate) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("clientId").is(unpaidDate));
+        query.addCriteria(Criteria.where("dateOfIssue").is(unpaidDate));
+        query.addCriteria(Criteria.where("dateOfPayment").is(null));
         return invoiceMongoDao.findByInvoices(query);
     }
 }

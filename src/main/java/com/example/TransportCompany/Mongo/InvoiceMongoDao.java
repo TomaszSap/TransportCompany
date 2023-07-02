@@ -13,9 +13,6 @@ import java.util.List;
 public class InvoiceMongoDao extends AbstractMongoDao {
     private static final CollectionEnum collection = CollectionEnum.INVOICES;
     private MongoTemplate mongoTemplate;
-    private static Invoice invoice = new Invoice();
-
-
     public InvoiceMongoDao(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
@@ -38,23 +35,23 @@ public class InvoiceMongoDao extends AbstractMongoDao {
     public Invoice findInvoiceById(String invoiceId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("objectId").is(invoiceId));
-        return (Invoice) findById(invoiceId, invoice.getClass(), collection);
+        return (Invoice) findById(invoiceId,Invoice.class, collection);
     }
 
 
-    public void findInvoiceAndModifyById(String invoiceId, Invoice invoice) {
+    public DaoModel findInvoiceAndModifyById(String invoiceId, Invoice invoice) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("objectId").is(invoiceId));
-        findAndModify(query, invoice, invoice.getClass(), collection);
+        query.addCriteria(Criteria.where("invoiceId").is(invoiceId));
+        return findAndModify(query, invoice, invoice.getClass(), collection);
     }
 
     public List<Invoice> findAllInvoices() {
 
-        return findAll(invoice.getClass(), collection);
+        return findAll(Invoice.class, collection);
     }
 
     public List<Invoice> findByInvoices(Query query) {
-        return findMany(query, invoice.getClass(), collection);
+        return findMany(query,Invoice.class, collection);
     }
 
     public boolean removeInvoice(Query query) {
